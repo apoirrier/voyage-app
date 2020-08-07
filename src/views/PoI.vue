@@ -1,13 +1,19 @@
 <template>
-    <div>
+    <div class>
         <div class=navigation> <router-link :to="parent.url"> {{ parent.name }} </router-link> > <router-link :to="url"> {{ name }} </router-link> </div>
         <div class=backMap> <router-link to="/"> Retour à la carte </router-link></div>
+        <ImageSlider/>
     </div>
 </template>
 
 <script>
+import ImageSlider from '../components/ImageSlider.vue'
+
 export default {
     name: "PoI",
+    components: {
+        ImageSlider
+    },
     data() {
         return {
             parent: {
