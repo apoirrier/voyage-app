@@ -1,5 +1,5 @@
 <template>
-    <div class="docker-content">
+    <div :class="styleColor">
         <h2> Informations pratiques </h2>
         <a :href="website" v-if="hasWebsite"> 
              <img class=icon src="images/www.png"> Website
@@ -30,6 +30,10 @@ export default {
         phone: {
             type: String,
             default: ''
+        },
+        type: {
+            type: String,
+            required: true
         }
     },
     computed: {
@@ -38,14 +42,25 @@ export default {
         },
         hasPhone() {
             return this.phone.length != 0
+        },
+        styleColor() {
+            if(this.type == "restaurant")
+                return "docker-content-red"
+            return "docker-content-default"
         }
     }
 }
 </script>
 
 <style lang="scss">
-.docker-content {
+.docker-content-red {
     background-color: #d87272;
+    float: right;
+    width: 35%;
+}
+
+.docker-content-default {
+    background-color: #8d8d8d;
     float: right;
     width: 35%;
 }
