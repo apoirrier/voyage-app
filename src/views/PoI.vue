@@ -1,7 +1,7 @@
 <template>
     <div class>
         <NavigationBar :name="name" :parent="parent" :localUrl="localUrl"/>
-        <ImageSlider/>
+        <ImageSlider :images="images" :altText="name"/>
         <div class="main-content">
             <h1> {{ name }} </h1>
             <symbol id="icon-toque" class="icon" viewBox="0 0 64 64">
@@ -63,7 +63,8 @@ export default {
                     rate: 4,
                     date: "30 juillet 2020"
                 }
-            ]
+            ],
+            images: ["schauenstein_ext.jpeg", "Schauenstein_int.webp"]
         }
     },
     computed: {

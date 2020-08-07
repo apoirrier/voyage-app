@@ -16,10 +16,12 @@ export default {
     data() {
         return {
             currentImage: 0,
-            images: ["schauenstein_ext.jpeg", "Schauenstein_int.webp"],
-            altText: "Schauenstein Schloss",
             timer: ''
         }
+    },
+    props: {
+        images: Array,
+        altText: String
     },
     created() {
         this.timer = setInterval(this.incrementValue, 4000)
