@@ -13,18 +13,25 @@
             <rate class="RateCustom" :length="5" :value="rate" :disabled="true" iconref="icon-toque" />
             <p class=description-content> {{ description }} </p>
         </div>
+        <InfoDocker :website="website" :address="address" :phone="phone">
+            <template v-slot:googlemap>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2735.2093755187334!2d9.443593815599991!3d46.72133167913591!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4784ea5b9284d799%3A0x3cb3ffee0874f99d!2sSchauenstein%20Castle!5e0!3m2!1sen!2sch!4v1596810390067!5m2!1sen!2sch" width="400" height="300" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+            </template>
+        </InfoDocker>
     </div>
 </template>
 
 <script>
 import ImageSlider from '../components/ImageSlider.vue'
 import NavigationBar from '../components/NavigationBar.vue'
+import InfoDocker from '../components/InfoDocker.vue'
 
 export default {
     name: "PoI",
     components: {
         ImageSlider,
-        NavigationBar
+        NavigationBar,
+        InfoDocker
     },
     data() {
         return {
@@ -35,7 +42,10 @@ export default {
             name: "Schauenstein Schloss",
             localUrl: "/schauenstein",
             rate: 4,
-            description: "3 Michelin star restaurant (2020) in an old Swiss castle. Has a big garden, easily accessible by public transport. Also has a free parking in front. Its chef is Andreas Caminada, with a Swiss gastronomical and modern cuisine."
+            description: "3 Michelin star restaurant (2020) in an old Swiss castle. Has a big garden, easily accessible by public transport. Also has a free parking in front. Its chef is Andreas Caminada, with a Swiss gastronomical and modern cuisine.",
+            website: "https://schauenstein.ch/",
+            address: "Schlossgass 77, 7414 Fürstenau",
+            phone: "+41816321080"
         }
     }
 }
