@@ -56,7 +56,7 @@ export default {
 .image-slider_image {
   max-width: 100vw;
   width: 100vw;
-  height: 300px;
+  height: 400px;
   object-fit: cover;
   float: center;
 }
@@ -64,8 +64,8 @@ export default {
 .right-arrow {
     max-width: 50px;
     position: absolute;
-    top: 145px;
-    left: calc(100vw - 50px);
+    top: 195px;
+    left: calc(100vw - 60px);
     cursor: pointer;
     opacity: 0.8;
 }
@@ -73,8 +73,8 @@ export default {
 .right-arrow:hover {
     max-width: 50px;
     position: absolute;
-    top: 145px;
-    left: calc(100vw - 50px);
+    top: 195px;
+    left: calc(100vw - 60px);
     cursor: pointer;
     opacity: 1;
 }
@@ -82,7 +82,7 @@ export default {
 .left-arrow {
     max-width: 50px;
     position: absolute;
-    top: 145px;
+    top: 195px;
     left: 0;
     cursor: pointer;
     opacity: 0.8;
@@ -91,7 +91,7 @@ export default {
 .left-arrow:hover {
     max-width: 50px;
     position: absolute;
-    top: 145px;
+    top: 195px;
     left: 0;
     cursor: pointer;
     opacity: 1;

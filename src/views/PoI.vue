@@ -12,6 +12,14 @@
             </symbol>
             <rate class="RateCustom" :length="5" :value="rate" :disabled="true" :iconref="icon" />
             <p class=description-content> {{ description }} </p>
+            <Comment v-for="comment in comments"
+                    :title="comment.title"
+                    :content="comment.content"
+                    :date="comment.date"
+                    :rate="comment.rate"
+                    :icon="icon"
+                    :key="comment"
+            />
         </div>
         <InfoDocker :website="website" :address="address" :phone="phone" :type="type">
             <template v-slot:googlemap>
@@ -25,13 +33,15 @@
 import ImageSlider from '../components/ImageSlider.vue'
 import NavigationBar from '../components/NavigationBar.vue'
 import InfoDocker from '../components/InfoDocker.vue'
+import Comment from '../components/Comment.vue'
 
 export default {
     name: "PoI",
     components: {
         ImageSlider,
         NavigationBar,
-        InfoDocker
+        InfoDocker,
+        Comment
     },
     data() {
         return {
@@ -42,11 +52,19 @@ export default {
             name: "Schauenstein Schloss",
             localUrl: "/schauenstein",
             rate: 4,
-            description: "3 Michelin star restaurant (2020) in an old Swiss castle. Has a big garden, easily accessible by public transport. Also has a free parking in front. Its chef is Andreas Caminada, with a Swiss gastronomical and modern cuisine.",
+            description: "Restaurant triplement étoilé (en 2020), situé dans un authentique château Suisse. Il y a un grand et magnifique jardin. Le château est facilement accessible en transports publics (station de bus en face), et dispose d'un parking extérieur gratuit pour les visiteurs. Son chef, Andreas Caminada, régale les clients avec une cuisine moderne et expressive.",
             website: "https://schauenstein.ch/",
             address: "Schlossgass 77, 7414 Fürstenau",
             phone: "+41816321080",
-            type: "restaurant"
+            type: "restaurant",
+            comments: [
+                {
+                    title: "Très bon mais pas digne de ce qu'on attend d'un 3*",
+                    content: "Très bon restaurant, la cuisson des viandes et poissons parfaitement executée, et quelques plats surprenants. Le cadre est magnifique et on peut prendre l'apéro et le dessert dans le jardin. On peut même repartir avec le petit livret qui décrit le château, le menu, et quelques graines à planter dans le jardin. Cependant pas tant de surprises, les plats sont très modernes et complètement destructurés, et l'une des salle est dans la pénombre la plus totale. L'eau est payante et pas donnée. Les serveurs sont efficaces mais parlent peu anglais ou français, donc l'énoncé des plats pas toujours compréhensible.",
+                    rate: 4,
+                    date: "30 juillet 2020"
+                }
+            ]
         }
     },
     computed: {
