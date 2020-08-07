@@ -1,12 +1,17 @@
 <template>
     <div :class="styleColor">
         <h2> Informations pratiques </h2>
-        <a :href="website" v-if="hasWebsite"> 
-             <img class=icon src="images/www.png"> Website
+        <a :href="website" v-if="hasWebsite" style="color: #e7e7e7;"> 
+             <img class=icon src="images/www.png"> {{ website }}
         </a>
-        <p> {{ address }} </p>
+        <a :href="mailto" v-if="hasMail" style="color: #e7e7e7;"> 
+             <img class=icon src="images/at.png"> {{ mail }}
+        </a>
         <div v-if="hasPhone">
             <img class=icon src="images/phone.png"> {{ phone }}
+        </div>
+        <div v-if="hasAddress">
+            <img class=icon src="images/address.png"> {{ address }}
         </div>
         <div class="googlemap">
             <slot name="googlemap"></slot>
@@ -25,9 +30,13 @@ export default {
         },
         address: {
             type: String,
-            required: true
+            default: ''
         },
         phone: {
+            type: String,
+            default: ''
+        },
+        mail: {
             type: String,
             default: ''
         },
@@ -43,9 +52,18 @@ export default {
         hasPhone() {
             return this.phone.length != 0
         },
+        hasAddress() {
+            return this.address.length != 0
+        },
+        hasMail() {
+            return this.mail.length != 0
+        },
+        mailto() {
+            return "mailto:" + this.mail
+        },
         styleColor() {
             if(this.type == "restaurant")
-                return "docker-content-red"
+                return "docker-content-default docker-content-red"
             return "docker-content-default"
         }
     }
@@ -54,19 +72,19 @@ export default {
 
 <style lang="scss">
 .docker-content-red {
-    background-color: #d87272;
-    float: right;
-    width: 35%;
+    background-color: #bb3131;
 }
 
 .docker-content-default {
-    background-color: #8d8d8d;
     float: right;
     width: 35%;
+    display: flex;
+    flex-direction: column;
+    color: #e7e7e7;
 }
 
 .icon {
-    max-width: 30px;
+    max-width: 18px;
     display: inline-block;
     vertical-align: middle;
     padding-bottom: 10px;
@@ -80,6 +98,7 @@ export default {
 }
 
 .googlemap iframe{
+    margin-top: 20px;
     left:5%;
     top:0;
     height:100%;

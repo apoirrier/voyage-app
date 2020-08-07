@@ -50,7 +50,7 @@ export default {
   display: flex;
   width: 100vw;
   justify-content: space-between;
-  padding-top: 20px;
+  padding-top: 10px;
   padding-bottom: 20px;
   margin-left: calc((100% - 100vw)/2);
 }
