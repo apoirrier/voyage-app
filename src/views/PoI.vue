@@ -10,7 +10,7 @@
                 <path d="m23 26.997c-.553 0-1 .447-1 1v18.993c0 .553.447 1 1 1s1-.447 1-1v-18.993c0-.553-.447-1-1-1z"></path>
                 <path d="m41 26.997c-.553 0-1 .447-1 1v18.993c0 .553.447 1 1 1s1-.447 1-1v-18.993c0-.553-.447-1-1-1z"></path>
             </symbol>
-            <rate class="RateCustom" :length="5" :value="rate" :disabled="true" :iconref="icon" />
+            <rate class="RateCustom" :length="5" :value="currentRate" :disabled="true" :iconref="icon" />
             <p class=description-content> {{ description }} </p>
             <Comment v-for="comment in comments"
                     :title="comment.title"
@@ -51,7 +51,6 @@ export default {
             },
             name: "Schauenstein Schloss",
             localUrl: "/schauenstein",
-            rate: 4,
             description: "Restaurant triplement étoilé (en 2020), situé dans un authentique château Suisse. Il y a un grand et magnifique jardin. Le château est facilement accessible en transports publics (station de bus en face), et dispose d'un parking extérieur gratuit pour les visiteurs. Son chef, Andreas Caminada, régale les clients avec une cuisine moderne et expressive.",
             website: "https://schauenstein.ch/",
             address: "Schlossgass 77, 7414 Fürstenau",
@@ -72,6 +71,9 @@ export default {
             if(this.type == "restaurant")
                 return "icon-toque"
             return ""
+        },
+        currentRate() {
+            return this.comments[this.comments.length - 1].rate
         }
     }
 }
