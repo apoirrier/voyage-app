@@ -44,6 +44,7 @@ export default {
     background-color: white;
     text-align: left;
     border: 1px solid;
+    margin-bottom: 20px;
 }
 
 .comment-title {

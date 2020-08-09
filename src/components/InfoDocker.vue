@@ -76,11 +76,13 @@ export default {
 }
 
 .docker-content-default {
-    float: right;
     width: 35%;
     display: flex;
     flex-direction: column;
     color: #e7e7e7;
+    position: sticky;
+    top: 20px;
+    height: fit-content;
 }
 
 .icon {
