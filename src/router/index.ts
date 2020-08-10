@@ -1,23 +1,34 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import PoI from '../views/PoI.vue'
+import Home from '../views/Home.vue'
+import Region from '../views/Region.vue'
+import PageDoesNotExist from '../views/PageDoesNotExist.vue'
 
 Vue.use(VueRouter)
 
   const routes: Array<RouteConfig> = [
   {
     path: '/',
-    name: 'PoI',
+    name: 'Home',
+    component: Home
+  },
+  {
+    path: '/world/:region',
+    component: Region
+  },
+  {
+    path: '/world/:region/:poi',
     component: PoI
   },
-  /*{
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import('../views/About.vue')
-  }*/
+  {
+    path: '/404',
+    component: PageDoesNotExist
+  },
+  {
+    path: '*',
+    redirect: '/404'
+  }
 ]
 
 const router = new VueRouter({

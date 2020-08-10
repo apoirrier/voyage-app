@@ -14,10 +14,6 @@ export default {
             type: String,
             required: true
         },
-        localUrl: {
-            type: String,
-            required: true
-        }
     },
     computed: {
         url() {

@@ -1,6 +1,6 @@
 <template>
   <div class="poi">
-    <NavigationBar :name="name" :parent="parent" :localUrl="localUrl" />
+    <NavigationBar :name="name" :parent="parent" />
     <ImageSlider :images="images" :altText="name" />
     <div class="content"> 
         <div class="main-content">
@@ -55,6 +55,7 @@ import ImageSlider from "../components/ImageSlider.vue";
 import NavigationBar from "../components/NavigationBar.vue";
 import InfoDocker from "../components/InfoDocker.vue";
 import Comment from "../components/Comment.vue";
+import { mapState } from 'vuex'
 
 export default {
   name: "PoI",
@@ -68,70 +69,24 @@ export default {
     return {
       parent: {
         name: "Suisse",
-        url: "/schweiss",
+        url: "/world/schweiss",
       },
-      name: "Schauenstein Schloss",
-      localUrl: "/schauenstein",
-      description:
-        "Restaurant triplement étoilé (en 2020), situé dans un authentique château Suisse. Il y a un grand et magnifique jardin. Le château est facilement accessible en transports publics (station de bus en face), et dispose d'un parking extérieur gratuit pour les visiteurs. Son chef, Andreas Caminada, régale les clients avec une cuisine moderne et expressive.",
-      website: "https://schauenstein.ch/",
-      address: "Schlossgass 77, 7414 Fürstenau",
-      phone: "+41816321080",
-      mail: "kontakt@schauenstein.ch",
-      type: "restaurant",
-      comments: [
-        {
-          title: "Très bon mais pas digne de ce qu'on attend d'un 3*",
-          content:
-            "Très bon restaurant, la cuisson des viandes et poissons parfaitement executée, et quelques plats surprenants. Le cadre est magnifique et on peut prendre l'apéro et le dessert dans le jardin. On peut même repartir avec le petit livret qui décrit le château, le menu, et quelques graines à planter dans le jardin. Cependant pas tant de surprises, les plats sont très modernes et complètement destructurés, et l'une des salle est dans la pénombre la plus totale. L'eau est payante et pas donnée. Les serveurs sont efficaces mais parlent peu anglais ou français, donc l'énoncé des plats pas toujours compréhensible.",
-          rate: 4,
-          date: "30 juillet 2020",
-        },
-        {
-          title: "Très bon mais pas digne de ce qu'on attend d'un 3*",
-          content:
-            "Très bon restaurant, la cuisson des viandes et poissons parfaitement executée, et quelques plats surprenants. Le cadre est magnifique et on peut prendre l'apéro et le dessert dans le jardin. On peut même repartir avec le petit livret qui décrit le château, le menu, et quelques graines à planter dans le jardin. Cependant pas tant de surprises, les plats sont très modernes et complètement destructurés, et l'une des salle est dans la pénombre la plus totale. L'eau est payante et pas donnée. Les serveurs sont efficaces mais parlent peu anglais ou français, donc l'énoncé des plats pas toujours compréhensible.",
-          rate: 4,
-          date: "30 juillet 2020",
-        },
-        {
-          title: "Très bon mais pas digne de ce qu'on attend d'un 3*",
-          content:
-            "Très bon restaurant, la cuisson des viandes et poissons parfaitement executée, et quelques plats surprenants. Le cadre est magnifique et on peut prendre l'apéro et le dessert dans le jardin. On peut même repartir avec le petit livret qui décrit le château, le menu, et quelques graines à planter dans le jardin. Cependant pas tant de surprises, les plats sont très modernes et complètement destructurés, et l'une des salle est dans la pénombre la plus totale. L'eau est payante et pas donnée. Les serveurs sont efficaces mais parlent peu anglais ou français, donc l'énoncé des plats pas toujours compréhensible.",
-          rate: 4,
-          date: "30 juillet 2020",
-        },
-        {
-          title: "Très bon mais pas digne de ce qu'on attend d'un 3*",
-          content:
-            "Très bon restaurant, la cuisson des viandes et poissons parfaitement executée, et quelques plats surprenants. Le cadre est magnifique et on peut prendre l'apéro et le dessert dans le jardin. On peut même repartir avec le petit livret qui décrit le château, le menu, et quelques graines à planter dans le jardin. Cependant pas tant de surprises, les plats sont très modernes et complètement destructurés, et l'une des salle est dans la pénombre la plus totale. L'eau est payante et pas donnée. Les serveurs sont efficaces mais parlent peu anglais ou français, donc l'énoncé des plats pas toujours compréhensible.",
-          rate: 4,
-          date: "30 juillet 2020",
-        },
-        {
-          title: "Très bon mais pas digne de ce qu'on attend d'un 3*",
-          content:
-            "Très bon restaurant, la cuisson des viandes et poissons parfaitement executée, et quelques plats surprenants. Le cadre est magnifique et on peut prendre l'apéro et le dessert dans le jardin. On peut même repartir avec le petit livret qui décrit le château, le menu, et quelques graines à planter dans le jardin. Cependant pas tant de surprises, les plats sont très modernes et complètement destructurés, et l'une des salle est dans la pénombre la plus totale. L'eau est payante et pas donnée. Les serveurs sont efficaces mais parlent peu anglais ou français, donc l'énoncé des plats pas toujours compréhensible.",
-          rate: 4,
-          date: "30 juillet 2020",
-        },
-        {
-          title: "Très bon mais pas digne de ce qu'on attend d'un 3*",
-          content:
-            "Très bon restaurant, la cuisson des viandes et poissons parfaitement executée, et quelques plats surprenants. Le cadre est magnifique et on peut prendre l'apéro et le dessert dans le jardin. On peut même repartir avec le petit livret qui décrit le château, le menu, et quelques graines à planter dans le jardin. Cependant pas tant de surprises, les plats sont très modernes et complètement destructurés, et l'une des salle est dans la pénombre la plus totale. L'eau est payante et pas donnée. Les serveurs sont efficaces mais parlent peu anglais ou français, donc l'énoncé des plats pas toujours compréhensible.",
-          rate: 4,
-          date: "30 juillet 2020",
-        },
-        {
-          title: "Très bon mais pas digne de ce qu'on attend d'un 3*",
-          content:
-            "Très bon restaurant, la cuisson des viandes et poissons parfaitement executée, et quelques plats surprenants. Le cadre est magnifique et on peut prendre l'apéro et le dessert dans le jardin. On peut même repartir avec le petit livret qui décrit le château, le menu, et quelques graines à planter dans le jardin. Cependant pas tant de surprises, les plats sont très modernes et complètement destructurés, et l'une des salle est dans la pénombre la plus totale. L'eau est payante et pas donnée. Les serveurs sont efficaces mais parlent peu anglais ou français, donc l'énoncé des plats pas toujours compréhensible.",
-          rate: 4,
-          date: "30 juillet 2020",
-        },
-      ],
-      images: ["schauenstein_ext.jpeg", "Schauenstein_int.webp"],
+      name: "",
+      description: "",
+      website: "",
+      address: "",
+      phone: "",
+      mail: "",
+      type: "",
+      comments: [],
+      images: [],
     };
+  },
+  async created() {
+    this.loadData()
+  },
+  watch: {
+    '$route': 'loadData'
   },
   computed: {
     icon() {
@@ -141,7 +96,31 @@ export default {
     currentRate() {
       return this.comments[this.comments.length - 1].rate;
     },
+    ...mapState(['apiAddr'])
   },
+  methods: {
+    async loadData() {
+      try {
+        const response = await fetch(this.apiAddr + "poi/" + this.$route.params.region + "_" + this.$route.params.poi);
+        if(response.status == 404)
+          return this.$router.push('/404');
+        const data = await response.json();
+        this.name = data.name;
+        this.description = data.description;
+        this.address = data.address;
+        this.comments = data.comments;
+        this.images = data.images;
+        this.mail = data.mail;
+        this.phone = data.phone;
+        this.type = data.type;
+        this.website = data.website;
+        this.images = data.images;
+      } catch (err) {
+        console.log(err);
+        return this.$router.push('/404');
+      }
+    }
+  }
 };
 </script>
 
