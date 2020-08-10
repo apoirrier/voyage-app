@@ -5,15 +5,20 @@
         </div>
         <p class=comment-content> {{ content }} </p>
         <div class=comment-bottom>
-            <rate class="RateCustom comment-rating" :length="5" :value="rate" :disabled="true" :iconref="icon"/>
+            <Rating class="comment-rating" :score="rate" :type="type" />
             <div> {{ date }} </div>
         </div>
     </div>
 </template>
 
 <script>
+import Rating from './Rating.vue'
+
 export default {
     name: "Comment",
+    components: {
+        Rating
+    },
     props: {
         title: {
             type: String,
@@ -27,7 +32,7 @@ export default {
             type: Number,
             default: 3
         },
-        icon: {
+        type: {
             type: String,
             required: true
         },

@@ -1,5 +1,5 @@
 <template>
-    <router-link to="/world/schweiss"> Suisse </router-link> 
+    <router-link to="/world/graubunden"> Graubünden </router-link> 
 </template>
 
 <script>

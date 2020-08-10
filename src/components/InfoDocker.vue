@@ -1,17 +1,17 @@
 <template>
     <div :class="styleColor">
         <h2> Informations pratiques </h2>
-        <a :href="website" v-if="hasWebsite" style="color: #e7e7e7;"> 
-             <img class=icon src="images/www.png"> {{ website }}
+        <a class="infodocker_item" :href="website" v-if="hasWebsite" style="color: #e7e7e7;"> 
+             <img class=infodocker_icon src="images/www.png"> {{ website }}
         </a>
-        <a :href="mailto" v-if="hasMail" style="color: #e7e7e7;"> 
-             <img class=icon src="images/at.png"> {{ mail }}
+        <a class="infodocker_item" :href="mailto" v-if="hasMail" style="color: #e7e7e7;"> 
+             <img class=infodocker_icon src="images/at.png"> {{ mail }}
         </a>
-        <div v-if="hasPhone">
-            <img class=icon src="images/phone.png"> {{ phone }}
+        <div class="infodocker_item" v-if="hasPhone">
+            <img class=infodocker_icon src="images/phone.png"> {{ phone }}
         </div>
-        <div v-if="hasAddress">
-            <img class=icon src="images/address.png"> {{ address }}
+        <div class="infodocker_item" v-if="hasAddress">
+            <img class=infodocker_icon src="images/address.png"> {{ address }}
         </div>
         <div class="googlemap">
             <slot name="googlemap"></slot>
@@ -85,11 +85,17 @@ export default {
     height: fit-content;
 }
 
-.icon {
+.infodocker_icon {
     max-width: 18px;
     display: inline-block;
     vertical-align: middle;
-    padding-bottom: 10px;
+    padding-right: 10px;
+}
+
+.infodocker_item {
+    margin-bottom: 10px;
+    align-self: flex-start;
+    padding-left: 5%;
 }
 
 .googlemap {

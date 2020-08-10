@@ -1,6 +1,6 @@
 <template>
     <div class>
-        <div class=navigation> <router-link :to="parent.url"> {{ parent.name }} </router-link> > {{ name }} </div>
+        <div class=navigation> <router-link v-if="hasParent" :to="parent.url"> {{ parent.name }} </router-link> <span v-if="hasParent"> > </span> {{ name }} </div>
         <div class=backMap> <router-link to="/"> Retour à la carte </router-link></div>
     </div>
 </template>
@@ -16,8 +16,8 @@ export default {
         },
     },
     computed: {
-        url() {
-            return this.parent.url + this.localUrl
+        hasParent() {
+            return this.parent != null
         }
     }
 }
