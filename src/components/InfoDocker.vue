@@ -1,5 +1,5 @@
 <template>
-    <div :class="styleColor">
+    <div class="docker-content-default" :style="styleColor">
         <h2> Informations pratiques </h2>
         <a class="infodocker_item" :href="website" v-if="hasWebsite" style="color: #e7e7e7;"> 
              <img class=infodocker_icon src="images/www.png"> {{ website }}
@@ -21,6 +21,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
     name: "InfoDocker",
     props: {
@@ -61,19 +63,15 @@ export default {
         mailto() {
             return "mailto:" + this.mail
         },
+        ...mapState(['colors']),
         styleColor() {
-            if(this.type == "restaurant")
-                return "docker-content-default docker-content-red"
-            return "docker-content-default"
+            return "background-color: " + this.colors[this.type]
         }
     }
 }
 </script>
 
 <style lang="scss">
-.docker-content-red {
-    background-color: #bb3131;
-}
 
 .docker-content-default {
     width: 35%;

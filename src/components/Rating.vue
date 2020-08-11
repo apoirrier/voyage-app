@@ -15,11 +15,13 @@
             d="m41 26.997c-.553 0-1 .447-1 1v18.993c0 .553.447 1 1 1s1-.447 1-1v-18.993c0-.553-.447-1-1-1z"
             ></path>
         </symbol>
-        <rate class="RateCustom" :length="5" :value="score" :disabled="true" :iconref="icon" />
+        <rate class="RateCustom" :style="cssVars" :length="5" :value="score" :disabled="true" :iconref="icon" />
     </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
     name: "Rating",
     props: {
@@ -37,6 +39,10 @@ export default {
             if (this.type == "restaurant") return "icon-toque";
             return "";
         },
+        ...mapState(['colors']),
+        cssVars() {
+            return { '--color': this.colors[this.type] }
+        }
     }
 }
 </script>
@@ -46,8 +52,9 @@ export default {
   width: 25px;
   height: 25px;
 }
+
 .RateCustom.Rate .Rate__star.hover {
-  color: red;
+  color: var(--color);
   cursor: auto;
 }
 </style>
