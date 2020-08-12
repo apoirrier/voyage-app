@@ -8,15 +8,23 @@
 
         <div class="region_flexbox">
             <div class="region_tabs">
-                <div v-for="(tab, index) in poiTabs" :key="tab.name" class="region_onetab" :style="tabStyle(index)" @click="changeTab(index)">
-                    {{ tab.name }}
+                <div v-for="(tab, index) in poiTabs" :key="tab.type" class="region_onetab" :style="tabStyle(index)" @click="changeTab(index)">
+                    {{ getCategoryName(tab.type) }}
                 </div>
-                <div v-for="(tab, index) in generalTabs" :key="tab.name" class="region_onetab" :style="tabStyle(index+poiTabs.length)" @click="changeTab(index+poiTabs.length)">
-                    {{ tab.name }}
+                <div v-for="(tab, index) in generalTabs" :key="tab.type" class="region_onetab" :style="tabStyle(index+poiTabs.length)" @click="changeTab(index+poiTabs.length)">
+                    {{ getCategoryName(tab.type) }}
                 </div>
             </div>
             <div class="region_tab-content" :style="tabStyle(selectedTab)">
-                <router-link :to="nextUrl"> Schauenstein Schloss </router-link>
+                <div v-if="isPoiTab" class="region_tab-content-flex">
+                    <Carte v-for="poi in poiTabs[selectedTab].pois" :key="poi.name" 
+                        :nextUrl="nextUrl(poi.nextUrl)"
+                        :address="poi.address"
+                        :image="poi.image"
+                        :rate="poi.rate"
+                        :name="poi.name"
+                        :type="poiTabs[selectedTab].type" />
+                </div>
             </div>
         </div>
     </div>
@@ -25,13 +33,15 @@
 <script>
 import NavigationBar from '../components/NavigationBar.vue'
 import ImageSlider from '../components/ImageSlider.vue'
+import Carte from '../components/Carte.vue'
 import { mapState } from 'vuex'
 
 export default {
     name: "Region",
     components: {
         NavigationBar,
-        ImageSlider
+        ImageSlider,
+        Carte
     },
     data() {
         return {
@@ -41,27 +51,48 @@ export default {
             selectedTab: 0,
             poiTabs: [
                 {
-                    name: "Restaurants",
-                    type: "restaurant"
+                    type: "restaurant",
+                    pois: [
+                        {
+                            nextUrl: "/schauenstein",
+                            image: "images/schauenstein_ext.jpeg",
+                            name: "Schauenschtein Schloss",
+                            address: "address space that is very incredibly long a,d that I do not like",
+                            rate: 3,
+                        },
+                        {
+                            nextUrl: "/schauenstein",
+                            image: "images/schauenstein_ext.jpeg",
+                            name: "Schauenschtein",
+                            address: "address space",
+                            rate: 3,
+                        },
+                        {
+                            nextUrl: "/schauenstein",
+                            image: "images/schauenstein_ext.jpeg",
+                            name: "Schauenschtein",
+                            address: "address space",
+                            rate: 3,
+                        }
+                    ]
                 },
                 {
-                    name: "Hôtels",
-                    type: "hotel"
+                    type: "hotel",
+                    pois: []
                 }
             ], 
             generalTabs: [
                 {
-                    name: "Conseils",
                     type: "tips"
                 }
             ]
         }
     },
     computed: {
-        nextUrl() {
-            return this.$route.fullPath + "/schauenstein"
-        },
-        ...mapState(['colors'])
+        ...mapState(['colors', 'categoryNames']),
+        isPoiTab() {
+            return this.selectedTab < this.poiTabs.length
+        }
     },
     methods: {
         tabStyle(id) {
@@ -73,6 +104,12 @@ export default {
         },
         changeTab(id) {
             this.selectedTab = id
+        },
+        nextUrl(url) {
+            return this.$route.fullPath + url
+        },
+        getCategoryName(type) {
+            return this.categoryNames[type]
         }
     }
 }
@@ -108,6 +145,13 @@ export default {
     border-radius: 0 10px 0 0;
     min-height: 100px;
     color: #fefefe;
+}
+
+.region_tab-content-flex {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: flex-start;
 }
 
 .region_description {

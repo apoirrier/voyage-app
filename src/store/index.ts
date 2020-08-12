@@ -10,6 +10,11 @@ export default new Vuex.Store({
       'restaurant': '#bb3131',
       'hotel': '#23395d',
       'tips': '#d4a017'
+    },
+    categoryNames: {
+      'restaurant': 'Restaurants',
+      'hotel': 'Hôtels',
+      'tips': 'Conseils'
     }
   },
   mutations: {

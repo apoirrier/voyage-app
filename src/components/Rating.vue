@@ -53,6 +53,10 @@ export default {
   height: 25px;
 }
 
+.RateCustom.Rate .Rate__star {
+  cursor: auto;
+}
+
 .RateCustom.Rate .Rate__star.hover {
   color: var(--color);
   cursor: auto;
