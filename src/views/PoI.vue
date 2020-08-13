@@ -54,10 +54,7 @@ export default {
   },
   data() {
     return {
-      parent: {
-        name: "Graubünden",
-        url: "/world/graubunden",
-      },
+      parentName: "",
       name: "",
       description: "",
       website: "",
@@ -79,7 +76,13 @@ export default {
     currentRate() {
       return this.comments[this.comments.length - 1].rate;
     },
-    ...mapState(['apiAddr'])
+    ...mapState(['apiAddr']),
+    parent() {
+      return {
+        name: this.parentName,
+        url: "/world/" + this.$route.params.region
+      }
+    }
   },
   methods: {
     async loadData() {
@@ -88,6 +91,7 @@ export default {
         if(response.status == 404)
           return this.$router.push('/404');
         const data = await response.json();
+        this.parentName = data.parentName;
         this.name = data.name;
         this.description = data.description;
         this.address = data.address;

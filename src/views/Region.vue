@@ -95,7 +95,7 @@ export default {
         }
     },
     computed: {
-        ...mapState(['colors', 'categoryNames']),
+        ...mapState(['colors', 'categoryNames', 'apiAddr']),
         isPoiTab() {
             return this.selectedTab < this.poiTabs.length
         }
