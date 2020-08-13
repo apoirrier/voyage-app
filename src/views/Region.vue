@@ -99,6 +99,12 @@ export default {
                 this.description = data.description;
                 this.images = data.images;
                 this.generalTabs = data.generalTabs;
+                if('activities' in data) {
+                    this.poiTabs.push({
+                        type: "activity",
+                        pois: data.activities
+                    })
+                }
                 if('restaurants' in data) {
                     this.poiTabs.push({
                         type: "restaurant",
@@ -109,12 +115,6 @@ export default {
                     this.poiTabs.push({
                         type: "hotel",
                         pois: data.hotels
-                    })
-                }
-                if('activities' in data) {
-                    this.poiTabs.push({
-                        type: "activity",
-                        pois: data.activities
                     })
                 }
             } catch (err) {

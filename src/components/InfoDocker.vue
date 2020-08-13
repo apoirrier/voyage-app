@@ -14,7 +14,16 @@
             <img class=infodocker_icon src="images/address.png"> {{ address }}
         </div>
         <div class="googlemap">
-            <slot name="googlemap"></slot>
+            <iframe
+            :src="iframeUrl"
+            width="400"
+            height="300"
+            frameborder="0"
+            style="border:0;"
+            allowfullscreen
+            aria-hidden="false"
+            tabindex="0"
+            ></iframe>
         </div>
         <p/>
     </div>
@@ -45,7 +54,11 @@ export default {
         type: {
             type: String,
             required: true
-        }
+        },
+        iframeUrl: {
+            type: String,
+            required: true
+        },
     },
     computed: {
         hasWebsite() {

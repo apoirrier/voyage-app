@@ -10,7 +10,7 @@ export default new Vuex.Store({
     colors: {
       'restaurant': '#bb3131',
       'hotel': '#23395d',
-      'activity': '50c878',
+      'activity': '#00561b',
       'general': '#fcf4a3'
     },
     categoryNames: {

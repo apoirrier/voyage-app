@@ -17,20 +17,7 @@
             :key="comment"
         />
         </div>
-        <InfoDocker :website="website" :address="address" :phone="phone" :mail="mail" :type="type">
-        <template v-slot:googlemap>
-            <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2735.2093755187334!2d9.443593815599991!3d46.72133167913591!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4784ea5b9284d799%3A0x3cb3ffee0874f99d!2sSchauenstein%20Castle!5e0!3m2!1sen!2sch!4v1596810390067!5m2!1sen!2sch"
-            width="400"
-            height="300"
-            frameborder="0"
-            style="border:0;"
-            allowfullscreen
-            aria-hidden="false"
-            tabindex="0"
-            ></iframe>
-        </template>
-        </InfoDocker>
+        <InfoDocker :website="website" :address="address" :phone="phone" :mail="mail" :type="type" :iframeUrl="iframeUrl"/>
     </div>
   </div>
 </template>
@@ -64,6 +51,7 @@ export default {
       type: "",
       comments: [],
       images: [],
+      iframeUrl: ""
     };
   },
   async created() {
@@ -101,6 +89,7 @@ export default {
         this.phone = data.phone;
         this.type = data.type;
         this.website = data.website;
+        this.iframeUrl = data.iframeUrl;
       } catch (err) {
         console.log(err);
         return this.$router.push('/404');
