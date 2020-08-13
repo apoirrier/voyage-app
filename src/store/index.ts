@@ -9,12 +9,13 @@ export default new Vuex.Store({
     colors: {
       'restaurant': '#bb3131',
       'hotel': '#23395d',
-      'tips': '#d4a017'
+      'activity': '50c878',
+      'general': '#fcf4a3'
     },
     categoryNames: {
       'restaurant': 'Restaurants',
       'hotel': 'Hôtels',
-      'tips': 'Conseils'
+      'activity': "Activités"
     }
   },
   mutations: {

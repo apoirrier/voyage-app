@@ -11,8 +11,8 @@
                 <div v-for="(tab, index) in poiTabs" :key="tab.type" class="region_onetab" :style="tabStyle(index)" @click="changeTab(index)">
                     {{ getCategoryName(tab.type) }}
                 </div>
-                <div v-for="(tab, index) in generalTabs" :key="tab.type" class="region_onetab" :style="tabStyle(index+poiTabs.length)" @click="changeTab(index+poiTabs.length)">
-                    {{ getCategoryName(tab.type) }}
+                <div v-for="(tab, index) in generalTabs" :key="tab.title" class="region_onetab" :style="tabStyle(index+poiTabs.length)" @click="changeTab(index+poiTabs.length)">
+                    {{ tab.title }}
                 </div>
             </div>
             <div class="region_tab-content" :style="tabStyle(selectedTab)">
@@ -24,6 +24,10 @@
                         :rate="poi.rate"
                         :name="poi.name"
                         :type="poiTabs[selectedTab].type" />
+                </div>
+                <div v-else class="region_general-tab">
+                    <span> {{ this.generalTabs[this.selectedTab - this.poiTabs.length].text }} </span>
+                    <img v-for="img in this.generalTabs[this.selectedTab - this.poiTabs.length].images" :key="img" :src="img">
                 </div>
             </div>
         </div>
@@ -83,7 +87,9 @@ export default {
             ], 
             generalTabs: [
                 {
-                    type: "tips"
+                    title: "Cartes",
+                    text: "",
+                    images: ["images/graubunden_map.png"]
                 }
             ]
         }
@@ -100,7 +106,7 @@ export default {
                 return "background-color: darkgrey"
             if(id < this.poiTabs.length)
                 return "background-color: " + this.colors[this.poiTabs[id].type]
-            return "background-color: " + this.colors[this.generalTabs[id-this.poiTabs.length].type]
+            return "color: black; background-color: " + this.colors["general"]
         },
         changeTab(id) {
             this.selectedTab = id
@@ -157,6 +163,20 @@ export default {
 .region_description {
     text-align: justify;
     margin-bottom: 30px;
+}
+
+.region_general-tab {
+    display: flex;
+    flex-direction: column;
+    text-align: justify;
+    justify-content: center;
+    padding: 30px;
+}
+
+.region_general-tab img {
+    margin-top: 20px;
+    height: auto;
+    width: 100%;
 }
 
 </style>
