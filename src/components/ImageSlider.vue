@@ -11,6 +11,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
     name: "ImageSlider",
     data() {
@@ -27,16 +29,19 @@ export default {
         this.timer = setInterval(this.incrementValue, 4000)
     },
     computed: {
+        ...mapState(['imagesLocation']),
         imageUrl() {
-            return "images/" + this.images[this.currentImage];
+            return this.imagesLocation + this.images[this.currentImage];
         }
     },
     methods: {
         incrementValue(nb=1) {
-            this.currentImage += nb
-            this.currentImage %= this.images.length
-            clearInterval(this.timer)
-            this.timer = setInterval(this.incrementValue, 4000)
+            this.currentImage += nb;
+            this.currentImage %= this.images.length;
+            if(this.currentImage < 0)
+                this.currentImage += this.images.length;
+            clearInterval(this.timer);
+            this.timer = setInterval(this.incrementValue, 4000);
         }
     },
     beforeDestroy() {

@@ -20,14 +20,14 @@
                     <Carte v-for="poi in poiTabs[selectedTab].pois" :key="poi.name" 
                         :nextUrl="nextUrl(poi.nextUrl)"
                         :address="poi.address"
-                        :image="poi.image"
+                        :image="imageUrl(poi.image)"
                         :rate="poi.rate"
                         :name="poi.name"
                         :type="poiTabs[selectedTab].type" />
                 </div>
                 <div v-else class="region_general-tab">
                     <span> {{ this.generalTabs[this.selectedTab - this.poiTabs.length].text }} </span>
-                    <img v-for="img in this.generalTabs[this.selectedTab - this.poiTabs.length].images" :key="img" :src="img">
+                    <img v-for="img in this.generalTabs[this.selectedTab - this.poiTabs.length].images" :key="img" :src="imageUrl(img)">
                 </div>
             </div>
         </div>
@@ -49,53 +49,22 @@ export default {
     },
     data() {
         return {
-            name: 'Graubünden', 
-            description: "Graubünden (les Grisons en français), est un canton à l'Est de la Suisse, connu pour ses magnifiques paysages alpins et les sports d'hiver. St. Moritz, ville olympique d'hiver en 1928 et 1948, propose de nombreuses activités en été comme en hiver. Davos est aussi populaire pour le ski et la randonnée. La ville acceuille chaque année le Forum économique mondial. La Vallée de l'Engadine est typiquement Suisse, avec un paysage très vert, des passes et cols complètement au naturel et des villages comportant les maisons traditionnelles décorées par sgraffite.",
-            images: ['grisons1.jpg', 'grisons2.jpg', 'grisons3.jpg', 'grisons4.jpg'],
+            name: "", 
+            description: "",
+            images: [],
             selectedTab: 0,
-            poiTabs: [
-                {
-                    type: "restaurant",
-                    pois: [
-                        {
-                            nextUrl: "/schauenstein",
-                            image: "images/schauenstein_ext.jpeg",
-                            name: "Schauenschtein Schloss",
-                            address: "address space that is very incredibly long a,d that I do not like",
-                            rate: 3,
-                        },
-                        {
-                            nextUrl: "/schauenstein",
-                            image: "images/schauenstein_ext.jpeg",
-                            name: "Schauenschtein",
-                            address: "address space",
-                            rate: 3,
-                        },
-                        {
-                            nextUrl: "/schauenstein",
-                            image: "images/schauenstein_ext.jpeg",
-                            name: "Schauenschtein",
-                            address: "address space",
-                            rate: 3,
-                        }
-                    ]
-                },
-                {
-                    type: "hotel",
-                    pois: []
-                }
-            ], 
-            generalTabs: [
-                {
-                    title: "Cartes",
-                    text: "",
-                    images: ["images/graubunden_map.png"]
-                }
-            ]
+            poiTabs: [], 
+            generalTabs: []
         }
     },
+    async created() {
+        this.loadData()
+    },
+    watch: {
+        '$route': 'loadData'
+    },
     computed: {
-        ...mapState(['colors', 'categoryNames', 'apiAddr']),
+        ...mapState(['colors', 'categoryNames', 'apiAddr', 'imagesLocation']),
         isPoiTab() {
             return this.selectedTab < this.poiTabs.length
         }
@@ -116,6 +85,42 @@ export default {
         },
         getCategoryName(type) {
             return this.categoryNames[type]
+        },
+        imageUrl(localUrl) {
+            return this.imagesLocation + localUrl
+        },
+        async loadData() {
+            try {
+                const response = await fetch(this.apiAddr + "region/" + this.$route.params.region);
+                if(response.status == 404)
+                    return this.$router.push('/404');
+                const data = await response.json();
+                this.name = data.name;
+                this.description = data.description;
+                this.images = data.images;
+                this.generalTabs = data.generalTabs;
+                if('restaurants' in data) {
+                    this.poiTabs.push({
+                        type: "restaurant",
+                        pois: data.restaurants
+                    })
+                }
+                if('hotels' in data) {
+                    this.poiTabs.push({
+                        type: "hotel",
+                        pois: data.hotels
+                    })
+                }
+                if('activities' in data) {
+                    this.poiTabs.push({
+                        type: "activity",
+                        pois: data.activities
+                    })
+                }
+            } catch (err) {
+                console.log(err);
+                return this.$router.push('/404');
+            }
         }
     }
 }

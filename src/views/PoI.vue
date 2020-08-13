@@ -101,7 +101,6 @@ export default {
         this.phone = data.phone;
         this.type = data.type;
         this.website = data.website;
-        this.images = data.images;
       } catch (err) {
         console.log(err);
         return this.$router.push('/404');
