@@ -1,19 +1,40 @@
 <template>
     <div class="docker-content-default" :style="styleColor">
         <h2> Informations pratiques </h2>
-        <a class="infodocker_item" :href="website" v-if="hasWebsite" style="color: #e7e7e7;"> 
+
+        <a class="infodocker_item" :href="website" v-if="hasWebsite && !isEditing" style="color: #e7e7e7;"> 
              <img class=infodocker_icon src="images/www.png"> {{ website }}
         </a>
-        <a class="infodocker_item" :href="mailto" v-if="hasMail" style="color: #e7e7e7;"> 
+        <div v-else-if="isEditing">
+            <img class=infodocker_icon src="images/www.png">
+            <input v-model="website" @change="onChange">
+        </div>
+
+        <a class="infodocker_item" :href="mailto" v-if="hasMail && !isEditing" style="color: #e7e7e7;"> 
              <img class=infodocker_icon src="images/at.png"> {{ mail }}
         </a>
-        <div class="infodocker_item" v-if="hasPhone">
+        <div v-else-if="isEditing">
+            <img class=infodocker_icon src="images/at.png">
+            <input v-model="mail" @change="onChange">
+        </div>
+
+        <div class="infodocker_item" v-if="hasPhone && !isEditing">
             <img class=infodocker_icon src="images/phone.png"> {{ phone }}
         </div>
-        <div class="infodocker_item" v-if="hasAddress">
+        <div v-else-if="isEditing">
+            <img class=infodocker_icon src="images/phone.png">
+            <input v-model="phone" @change="onChange">
+        </div>
+
+        <div class="infodocker_item" v-if="hasAddress && !isEditing">
             <img class=infodocker_icon src="images/address.png"> {{ address }}
         </div>
-        <div class="googlemap">
+        <div v-else-if="isEditing">
+            <img class=infodocker_icon src="images/address.png">
+            <input v-model="address" @change="onChange">
+        </div>
+
+        <div class="googlemap" v-if="!isEditing">
             <iframe
             :src="iframeUrl"
             width="400"
@@ -24,6 +45,10 @@
             aria-hidden="false"
             tabindex="0"
             ></iframe>
+        </div>
+        <div v-else>
+            Minimap: 
+            <input v-model="iframeUrl" @change="onChange">
         </div>
         <p/>
     </div>
@@ -59,6 +84,10 @@ export default {
             type: String,
             required: true
         },
+        isEditing: {
+            type: Boolean,
+            default: false
+        }
     },
     computed: {
         hasWebsite() {
@@ -79,6 +108,18 @@ export default {
         ...mapState(['colors']),
         styleColor() {
             return "background-color: " + this.colors[this.type]
+        }
+    },
+    methods: {
+        onChange() {
+            const data = {
+                website: this.website,
+                phone: this.phone,
+                address: this.address,
+                mail: this.mail,
+                iframeUrl: this.iframeUrl
+            }
+            this.$emit("hasChanged", data);
         }
     }
 }

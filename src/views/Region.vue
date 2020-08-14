@@ -23,14 +23,14 @@
             </div>
             <div class="region_tab-content" :style="tabStyle(selectedTab)">
                 <div v-if="isPoiTab" class="region_tab-content-flex">
-                    <div v-for="poi in poiTabs[selectedTab].pois" :key="poi.name" style="position: relative;">
+                    <div v-for="(poi, idx) in poiTabs[selectedTab].pois" :key="poi.name" style="position: relative;">
                         <Carte :nextUrl="nextUrl(poi.nextUrl)"
                             :address="poi.address"
                             :image="imageUrl(poi.image)"
                             :rate="poi.rate"
                             :name="poi.name"
                             :type="poiTabs[selectedTab].type" />
-                        <div v-if="isEditing" class="cross_close" @click="removePoi(poi.nextUrl)"> X </div>
+                        <div v-if="isEditing" class="cross_close" @click="removePoi(poi.nextUrl, idx)"> X </div>
                     </div>
                     <div v-if="isEditing" class="region_newpoi" @click="createPoi">
                         <svg viewBox="0 0 512 512">
@@ -43,7 +43,7 @@
                     <span> {{ this.generalTabs[this.selectedTab - this.poiTabs.length].text }} </span>
                     <img v-for="img in this.generalTabs[this.selectedTab - this.poiTabs.length].images" :key="img" :src="imageUrl(img)">
                 </div>
-                <NewPoi
+                <NewPoi v-if="isEditing && isPoiTab"
                     v-show="isCreatingPoi"
                     @close="cancelPoiCreation"
                     @confirm="poiCreated"
@@ -107,7 +107,7 @@ export default {
             this.selectedTab = id
         },
         nextUrl(url) {
-            return this.$route.fullPath + url
+            return (this.$route.fullPath + "/" + url).split("//").join("/");
         },
         getCategoryName(type) {
             return this.categoryNames[type]
@@ -142,21 +142,20 @@ export default {
                             this.creationError = err;
                         }).then(() => {
                             this.isCreatingPoi = false;
-                            return this.$router.push(this.$route.fullPath + '/' + id);
+                            return this.$router.push((this.$route.fullPath + "/" + id + "?edit=1").split("//").join("/"));
                         });
                 } catch (err) {
                     this.creationError = err;
                 }   
             }
         },
-        removePoi(id) {
+        removePoi(id, index) {
             this.$confirm("Êtes-vous sûr de vouloir supprimer cette carte ?").then( () => {
                 const requestOptions = {
                     method: "DELETE"
                 };
-                fetch(this.apiAddr + "delete/" + this.$route.params.region + id, requestOptions).then( () => {
-                    this.$router.go();
-                });
+                fetch(this.apiAddr + "delete/" + this.$route.params.region + "/" + id, requestOptions);
+                this.poiTabs[this.selectedTab].pois.splice(index, 1);
             });
         },
         async loadData() {

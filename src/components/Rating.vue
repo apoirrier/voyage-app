@@ -32,7 +32,7 @@
   M18.326,27.923c0-4.023,3.272-7.295,7.295-7.295c0.374,0,0.677-0.303,0.677-0.677s-0.303-0.677-0.677-0.677
  c-4.768,0-8.648,3.88-8.648,8.648c0,0.374,0.303,0.677,0.677,0.677C18.023,28.6,18.326,28.297,18.326,27.923z" />
         </symbol> 
-        <rate class="RateCustom" :style="cssVars" :length="5" :value="score" :disabled="true" :iconref="icon" />
+        <rate class="RateCustom" :style="cssVars" :length="5" :value="score" :disabled="!editable" :iconref="icon" @after-rate="rateChanged" />
     </div>
 </template>
 
@@ -49,6 +49,10 @@ export default {
         type: {
             type: String,
             required: true
+        },
+        editable: {
+            type: Boolean,
+            default: false
         }
     },
     computed: {
@@ -61,6 +65,11 @@ export default {
         ...mapState(['colors']),
         cssVars() {
             return { '--color': this.colors[this.type] }
+        }
+    },
+    methods: {
+        rateChanged(newRate) {
+            this.$emit("after-rate", newRate);
         }
     }
 }

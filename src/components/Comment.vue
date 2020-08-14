@@ -1,12 +1,16 @@
 <template>
     <div class=comment>
         <div class=comment-title>
-            {{ title }}
+            <span v-if="!isEditing"> {{ title }} </span>
+            <input v-else v-model="title" @change="onChange">
+            <div v-if="isEditing" class="cross_close_comment" @click="remove"> X </div>
         </div>
-        <p class=comment-content> {{ content }} </p>
+        <p v-if="!isEditing" class=comment-content> {{ content }} </p>
+        <textarea v-else v-model="content" @change="onChange" />
         <div class=comment-bottom>
-            <Rating class="comment-rating" :score="rate" :type="type" />
-            <div> {{ date }} </div>
+            <Rating class="comment-rating" :score="rate" :type="type" :editable="isEditing" @after-rate="rateChanged"/>
+            <div v-if="!isEditing"> {{ date }} </div>
+            <input v-else v-model="date" @change="onChange">
         </div>
     </div>
 </template>
@@ -39,6 +43,33 @@ export default {
         date: {
             type: String,
             required: true
+        },
+        isEditing: {
+            type: Boolean,
+            default: false
+        }
+    },
+    methods: {
+        onChange() {
+            const data = {
+                title: this.title,
+                content: this.content,
+                rate: this.rate,
+                date: this.date,
+            }
+            this.$emit("hasChanged", data);
+        },
+        rateChanged(newRate) {
+            const data = {
+                title: this.title,
+                content: this.content,
+                rate: newRate,
+                date: this.date,
+            }
+            this.$emit("hasChanged", data);
+        },
+        remove() {
+            this.$emit("remove");
         }
     }
 }
@@ -50,6 +81,7 @@ export default {
     text-align: left;
     border: 1px solid;
     margin-bottom: 20px;
+    min-width: 350px;
 }
 
 .comment-title {
@@ -61,6 +93,7 @@ export default {
     font-weight: bold;
     display: block;
     text-indent: 1em;
+    position: relative;
 }
 
 .comment-content {
@@ -85,5 +118,14 @@ export default {
 .comment-rating {
     float: left;
     transform:scale(0.75) translate(-40px,-7px);
+}
+
+.cross_close_comment {
+    position: absolute; 
+    top: 0px; 
+    right: 15px; 
+    color: red; 
+    cursor: pointer;
+    font-weight: bold;
 }
 </style>
