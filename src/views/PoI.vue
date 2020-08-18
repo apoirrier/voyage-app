@@ -40,7 +40,7 @@ import NavigationBar from "../components/NavigationBar.vue";
 import InfoDocker from "../components/InfoDocker.vue";
 import Comment from "../components/Comment.vue";
 import Rating from "../components/Rating.vue";
-import { mapState } from 'vuex'
+import Parse from 'parse'
 
 export default {
   name: "PoI",
@@ -79,7 +79,6 @@ export default {
         return this.comments[0].rate;
       return 0;
     },
-    ...mapState(['apiAddr']),
     parent() {
       return {
         name: this.parentName,
@@ -89,12 +88,11 @@ export default {
   },
   methods: {
     async loadData() {
-      try {
-        const response = await fetch(this.apiAddr + "poi/" + this.$route.params.region + "/" + this.$route.params.poi);
-        if(response.status == 404)
-          return this.$router.push('/404');
-        const data = await response.json();
-        this.parentName = data.parentName;
+      Parse.Cloud.run("getPoi", {region: this.$route.params.region, poi: this.$route.params.poi}).then( ( answer ) => {
+          if(answer === undefined || answer.code !== 200)
+              return this.$router.push('/404');
+          const data = answer.poi;
+          this.parentName = data.parentName;
         this.name = data.name;
         this.description = data.description;
         this.address = data.address;
@@ -107,31 +105,30 @@ export default {
         this.iframeUrl = data.iframeUrl;
         if(this.$route.query.edit == 1)
           this.isEditing = true;
-      } catch (err) {
-        console.log(err);
-        return this.$router.push('/404');
-      }
+      });
     },
     beginEdit() {
         this.isEditing = true;
     },
     finishEdit() {
       this.isEditing = false;
-      const requestOptions = {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({  name: this.name, 
-                                  description: this.description,
-                                  address: this.address,
-                                  comments: this.comments,
-                                  images: this.images,
-                                  mail: this.mail,
-                                  phone: this.phone,
-                                  type: this.type,
-                                  website: this.website,
-                                  iframeUrl: this.iframeUrl }),
-      };
-      fetch(this.apiAddr + "update/" + this.$route.params.region + "/" + this.$route.params.poi, requestOptions);
+      const params = {
+          region: this.$route.params.region,
+          poi: this.$route.params.poi,
+          data: {
+              name: this.name,
+              address: this.address,
+              comments: this.comments,
+              description: this.description,
+              iframeUrl: this.iframeUrl,
+              images: this.images,
+              mail: this.mail,
+              phone: this.phone,
+              website: this.website,
+              type: this.type
+          }
+      }
+      Parse.Cloud.run("updatePoi", params);
     },
     updateInfos(data) {
       this.address = data.address;

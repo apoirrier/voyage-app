@@ -61,6 +61,7 @@ import ImageSlider from '../components/ImageSlider.vue'
 import Carte from '../components/Carte.vue'
 import NewPoi from '../components/NewPoi.vue'
 import { mapState } from 'vuex'
+import Parse from 'parse'
 
 export default {
     name: "Region",
@@ -90,7 +91,7 @@ export default {
         '$route': 'loadData'
     },
     computed: {
-        ...mapState(['colors', 'categoryNames', 'apiAddr', 'imagesLocation']),
+        ...mapState(['colors', 'categoryNames', 'imagesLocation']),
         isPoiTab() {
             return this.selectedTab < this.poiTabs.length
         }
@@ -129,45 +130,48 @@ export default {
             if(name.length === 0)
                 this.creationError = "Un nom doit être fourni";
             else {
-                try {
+                this.isCreatingPoi = false;
+                const id = name.split(' ').join('-').toLowerCase();
+                Parse.Cloud.run("createPoi", {
+                        region: this.$route.params.region,
+                        poi: id,
+                        name: name,
+                        type: this.poiTabs[this.selectedTab].type
+                    }).then( ( answer ) => {
+                    if(answer === undefined) {
+                        this.creationError = "Error calling API";
+                        return;
+                    }
+                    if(answer.code != 200) {
+                        this.creationError = answer.error;
+                    }
                     this.isCreatingPoi = false;
-                    const id = name.split(' ').join('-').toLowerCase();
-                    const requestOptions = {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ name: name, type: this.poiTabs[this.selectedTab].type }),
-                    };
-                    fetch(this.apiAddr + "create/" + this.$route.params.region + "/" + id, requestOptions)
-                        .catch( (err) => {
-                            this.creationError = err;
-                        }).then(() => {
-                            this.isCreatingPoi = false;
-                            return this.$router.push((this.$route.fullPath + "/" + id + "?edit=1").split("//").join("/"));
-                        });
-                } catch (err) {
-                    this.creationError = err;
-                }   
+                    return this.$router.push((this.$route.fullPath + "/" + id + "?edit=1").split("//").join("/"));
+                });   
             }
         },
         removePoi(id, index) {
             this.$confirm("Êtes-vous sûr de vouloir supprimer cette carte ?").then( () => {
-                const requestOptions = {
-                    method: "DELETE"
+                const params = {
+                    region: this.$route.params.region,
+                    poi: id,
                 };
-                fetch(this.apiAddr + "delete/" + this.$route.params.region + "/" + id, requestOptions);
+
+                Parse.Cloud.run("deletePoi", params).then((answer) => {
+                    console.log(answer);
+                });
                 this.poiTabs[this.selectedTab].pois.splice(index, 1);
             });
         },
         async loadData() {
-            try {
-                const response = await fetch(this.apiAddr + "region/" + this.$route.params.region);
-                if(response.status == 404)
+            Parse.Cloud.run("getRegion", {region: this.$route.params.region}).then( ( answer ) => {
+                if(answer === undefined || answer.code !== 200)
                     return this.$router.push('/404');
-                const data = await response.json();
+                const data = answer.response;
                 this.name = data.name;
                 this.description = data.description;
                 this.images = data.images;
-                this.generalTabs = data.generalTabs;
+                this.generalTabs = data.generalTabs; 
                 if('activities' in data) {
                     this.poiTabs.push({
                         type: "activity",
@@ -186,10 +190,7 @@ export default {
                         pois: data.hotels
                     })
                 }
-            } catch (err) {
-                console.log(err);
-                return this.$router.push('/404');
-            }
+            });
         }
     }
 }
