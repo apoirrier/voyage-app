@@ -70,7 +70,7 @@
     color: #2c3e50;
     padding: 10px;
     width: 250px;
-    height: 150px;
+    height: auto;
     align-items: center;
   }
 
@@ -87,6 +87,11 @@
   }
   .modal_buttons button{
       margin: 5px;
+  }
+
+  .modal span {
+      cursor: auto;
+      margin: 10px;
   }
 
 </style>

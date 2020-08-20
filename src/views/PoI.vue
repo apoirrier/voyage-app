@@ -1,8 +1,6 @@
 <template>
   <div class="poi">
-    <NavigationBar :name="name" :parent="parent" />
-    <img v-if="isEditing" src="images/edit_active.png" class="edit_button edit_button_active" @click="finishEdit">
-    <img v-else src="images/edit.png" class="edit_button" @click="beginEdit">
+    <NavigationBar :name="name" :parent="parent" @login-change="changeLogin"/>
     <ImageSlider :images="images" :altText="name" />
     <div class="content"> 
         <div class="main-content">
@@ -27,9 +25,14 @@
             @remove="removeComment(idx)"
         />
         </div>
-        <InfoDocker :website="website" :address="address" :phone="phone" :mail="mail" 
+        <div class="right-panel">
+          <img v-if="isEditing" src="images/edit_active.png" class="edit_button edit_button_active" @click="finishEdit">
+          <img v-else-if="!isEditing && loggedIn" src="images/edit.png" class="edit_button" @click="beginEdit">
+          <div v-else />
+          <InfoDocker :website="website" :address="address" :phone="phone" :mail="mail" 
                     :type="type" :iframeUrl="iframeUrl" :isEditing="isEditing" 
                     @hasChanged="updateInfos" />
+        </div>
     </div>
   </div>
 </template>
@@ -64,7 +67,8 @@ export default {
       comments: [],
       images: [],
       iframeUrl: "",
-      isEditing: false
+      isEditing: false,
+      loggedIn: Parse.User.current() != undefined
     };
   },
   async created() {
@@ -87,12 +91,25 @@ export default {
     }
   },
   methods: {
+    changeLogin(newValue) {
+        this.loggedIn = newValue;
+    },
     async loadData() {
       Parse.Cloud.run("getPoi", {region: this.$route.params.region, poi: this.$route.params.poi}).then( ( answer ) => {
-          if(answer === undefined || answer.code !== 200)
-              return this.$router.push('/404');
-          const data = answer.poi;
-          this.parentName = data.parentName;
+        if(answer === undefined || answer.code >= 500) {
+            this.$alert("Error while trying to contact server... Please try again or contact an admin");
+            return;
+        } else if(answer.code === 403) {
+            this.$alert("User unauthorized, please log in");
+            return;
+        } else if(answer.code === 404)
+            return this.$router.push('/404');
+        else if(answer.code !== 200) {
+            this.$alert("Unknown error: code " + answer.code);
+            return;
+        }
+        const data = answer.poi;
+        this.parentName = data.parentName;
         this.name = data.name;
         this.description = data.description;
         this.address = data.address;
@@ -128,7 +145,20 @@ export default {
               type: this.type
           }
       }
-      Parse.Cloud.run("updatePoi", params);
+      Parse.Cloud.run("updatePoi", params).then( ( answer ) => {
+        if(answer === undefined || answer.code >= 500) {
+            this.$alert("Error while trying to contact server... Please try again or contact an admin");
+            return;
+        } else if(answer.code === 403) {
+            this.$alert("User unauthorized, please log in");
+            return;
+        } else if(answer.code === 404)
+            return this.$router.push('/404');
+        else if(answer.code !== 200) {
+            this.$alert("Unknown error: code " + answer.code);
+            return;
+        }
+      });
     },
     updateInfos(data) {
       this.address = data.address;
@@ -188,5 +218,12 @@ export default {
   text-align: justify;
 }
 
+
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  width: 35%;
+  align-items: flex-end;
+}
 
 </style>

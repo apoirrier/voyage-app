@@ -1,5 +1,7 @@
 <template>
-    <router-link to="/world/graubunden"> Graubünden </router-link> 
+<div>
+    <router-link to="/world/graubunden"> Graubünden </router-link>
+</div>
 </template>
 
 <script>

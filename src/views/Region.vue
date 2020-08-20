@@ -1,13 +1,14 @@
 <template>
     <div class=region>
-        <NavigationBar :name="name" />
+        <NavigationBar :name="name" @login-change="changeLogin"/>
         <ImageSlider :images="images" :altText="name" />
 
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <div/>
             <h1> {{ name }} </h1>
             <img v-if="isEditing" src="images/edit_active.png" class="edit_button edit_button_active" @click="toggleEdit">
-            <img v-else src="images/edit.png" class="edit_button" @click="toggleEdit">
+            <img v-else-if="!isEditing && loggedIn" src="images/edit.png" class="edit_button" @click="toggleEdit">
+            <div v-else />
         </div>
 
         <p class="region_description"> {{ description}} </p>
@@ -81,7 +82,8 @@ export default {
             generalTabs: [],
             isEditing: false,
             isCreatingPoi: false,
-            creationError: ""
+            creationError: "",
+            loggedIn: Parse.User.current() != undefined,
         }
     },
     async created() {
@@ -130,7 +132,7 @@ export default {
             if(name.length === 0)
                 this.creationError = "Un nom doit être fourni";
             else {
-                this.isCreatingPoi = false;
+                this.creationError = "";
                 const id = name.split(' ').join('-').toLowerCase();
                 Parse.Cloud.run("createPoi", {
                         region: this.$route.params.region,
@@ -138,12 +140,17 @@ export default {
                         name: name,
                         type: this.poiTabs[this.selectedTab].type
                     }).then( ( answer ) => {
-                    if(answer === undefined) {
-                        this.creationError = "Error calling API";
+                    if(answer === undefined || answer.code >= 500) {
+                        this.creationError = ("Error while trying to contact server... Please try again or contact an admin");
                         return;
-                    }
-                    if(answer.code != 200) {
-                        this.creationError = answer.error;
+                    } else if(answer.code === 403) {
+                        this.creationError = ("User unauthorized, please log in");
+                        return;
+                    } else if(answer.code === 404)
+                        return this.$router.push('/404');
+                    else if(answer.code !== 200) {
+                        this.creationError = ("Unknown error: code " + answer.code);
+                        return;
                     }
                     this.isCreatingPoi = false;
                     return this.$router.push((this.$route.fullPath + "/" + id + "?edit=1").split("//").join("/"));
@@ -158,15 +165,37 @@ export default {
                 };
 
                 Parse.Cloud.run("deletePoi", params).then((answer) => {
-                    console.log(answer);
+                    if(answer === undefined || answer.code >= 500) {
+                        this.$alert("Error while trying to contact server... Please try again or contact an admin");
+                        return;
+                    } else if(answer.code === 403) {
+                        this.$alert("User unauthorized, please log in");
+                        return;
+                    } else if(answer.code === 404)
+                        return this.$router.push('/404');
+                    else if(answer.code !== 200) {
+                        this.$alert("Unknown error: code " + answer.code);
+                        return;
+                    }
+                    this.poiTabs[this.selectedTab].pois.splice(index, 1);
                 });
-                this.poiTabs[this.selectedTab].pois.splice(index, 1);
             });
         },
         async loadData() {
             Parse.Cloud.run("getRegion", {region: this.$route.params.region}).then( ( answer ) => {
-                if(answer === undefined || answer.code !== 200)
+                if(answer === undefined || answer.code >= 500) {
+                    this.$alert("Error while trying to contact server... Please try again or contact an admin");
+                    return;
+                } else if(answer.code === 403) {
+                    this.$alert("User unauthorized, please log in");
+                    return;
+                } else if(answer.code === 404)
                     return this.$router.push('/404');
+                else if(answer.code !== 200) {
+                    this.$alert("Unknown error: code " + answer.code);
+                    return;
+                }
+                                    
                 const data = answer.response;
                 this.name = data.name;
                 this.description = data.description;
@@ -191,6 +220,9 @@ export default {
                     })
                 }
             });
+        },
+        changeLogin(newValue) {
+            this.loggedIn = newValue;
         }
     }
 }

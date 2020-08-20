@@ -128,13 +128,14 @@ export default {
 <style lang="scss">
 
 .docker-content-default {
-    width: 35%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     color: #e7e7e7;
     position: sticky;
     top: 20px;
     height: fit-content;
+    margin-top: 20px;
 }
 
 .infodocker_icon {
