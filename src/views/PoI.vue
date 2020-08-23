@@ -1,7 +1,7 @@
 <template>
   <div class="poi">
     <NavigationBar :name="name" :parent="parent" @login-change="changeLogin"/>
-    <ImageSlider :images="images" :altText="name" />
+    <ImageSlider :images="images" :altText="name" :isEditing="isEditing" :imageName="this.$route.params.poi" @images-changed="updateImages" />
     <div class="content"> 
         <div class="main-content">
         <h1 v-if="!isEditing">{{ name }}</h1>
@@ -185,6 +185,9 @@ export default {
     },
     removeComment(idx) {
       this.comments.splice(idx, 1);
+    },
+    updateImages(img) {
+      this.images = img;
     }
   }
 };

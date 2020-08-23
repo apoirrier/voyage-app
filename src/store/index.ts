@@ -5,7 +5,6 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    imagesLocation: "images/",
     colors: {
       'restaurant': '#bb3131',
       'hotel': '#23395d',

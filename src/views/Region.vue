@@ -1,7 +1,7 @@
 <template>
     <div class=region>
         <NavigationBar :name="name" @login-change="changeLogin"/>
-        <ImageSlider :images="images" :altText="name" />
+        <ImageSlider :images="images" :altText="name" :isEditing="isEditing" :imageName="this.$route.params.region" @images-changed="updateImages" />
 
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <div/>
@@ -93,7 +93,7 @@ export default {
         '$route': 'loadData'
     },
     computed: {
-        ...mapState(['colors', 'categoryNames', 'imagesLocation']),
+        ...mapState(['colors', 'categoryNames']),
         isPoiTab() {
             return this.selectedTab < this.poiTabs.length
         }
@@ -115,8 +115,10 @@ export default {
         getCategoryName(type) {
             return this.categoryNames[type]
         },
-        imageUrl(localUrl) {
-            return this.imagesLocation + localUrl
+        imageUrl(image) {
+            if(image === undefined)
+                return "images/undefined"
+            return image.url();
         },
         toggleEdit() {
             this.isEditing = !this.isEditing;
@@ -223,6 +225,9 @@ export default {
         },
         changeLogin(newValue) {
             this.loggedIn = newValue;
+        },
+        updateImages(img) {
+            this.images = img;
         }
     }
 }
