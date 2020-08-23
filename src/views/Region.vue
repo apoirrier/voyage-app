@@ -5,13 +5,15 @@
 
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <div/>
-            <h1> {{ name }} </h1>
-            <img v-if="isEditing" src="images/edit_active.png" class="edit_button edit_button_active" @click="toggleEdit">
-            <img v-else-if="!isEditing && loggedIn" src="images/edit.png" class="edit_button" @click="toggleEdit">
+            <h1 v-if="!isEditing"> {{ name }} </h1>
+            <input v-else v-model="name">
+            <img v-if="isEditing" src="images/edit_active.png" class="edit_button edit_button_active" @click="finishEdit">
+            <img v-else-if="!isEditing && loggedIn" src="images/edit.png" class="edit_button" @click="beginEdit">
             <div v-else />
         </div>
 
-        <p class="region_description"> {{ description}} </p>
+        <p v-if="!isEditing" class="region_description"> {{ description}} </p>
+        <textarea v-else v-model="description"/>
 
         <div class="region_flexbox">
             <div class="region_tabs">
@@ -120,8 +122,34 @@ export default {
                 return "images/undefined"
             return image.url();
         },
-        toggleEdit() {
-            this.isEditing = !this.isEditing;
+        beginEdit() {
+            this.isEditing = true;
+        },
+        async finishEdit() {
+            this.isEditing = false;
+            const params = {
+                region: this.$route.params.region,
+                data: {
+                    name: this.name,
+                    generalTabs: this.generalTabs,
+                    images: this.images,
+                    description: this.description
+                }
+            }
+            Parse.Cloud.run("updateRegion", params).then( ( answer ) => {
+                if(answer === undefined || answer.code >= 500) {
+                    this.$alert("Error while trying to contact server... Please try again or contact an admin");
+                    return;
+                } else if(answer.code === 403) {
+                    this.$alert("User unauthorized, please log in");
+                    return;
+                } else if(answer.code === 404)
+                    return this.$router.push('/404');
+                else if(answer.code !== 200) {
+                    this.$alert("Unknown error: code " + answer.code);
+                    return;
+                }
+            });
         },
         createPoi() {
             this.isCreatingPoi = true;
