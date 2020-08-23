@@ -161,14 +161,14 @@ export default {
 
 .file_button {
     cursor: pointer;
-    opacity: 60%;
+    opacity: 0.6;
     position: absolute;
     right: 60px;
     top: 75px;
 }
 
 .file_button:hover {
-    opacity: 100%;
+    opacity: 1;
 }
 
 .file_button svg {
@@ -178,14 +178,14 @@ export default {
 
 .remove_button {
     cursor: pointer;
-    opacity: 60%;
+    opacity: 0.6;
     position: absolute;
     right: 10px;
     top: 75px;
 }
 
 .remove_button:hover {
-    opacity: 100%;
+    opacity: 1;
 }
 
 .remove_button svg {

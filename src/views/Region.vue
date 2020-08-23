@@ -295,15 +295,15 @@ export default {
     width: 30px;
     height: 30px;
     cursor: pointer;
-    opacity: 40%;
+    opacity: 0.4;
 }
 
 .edit_button:hover {
-    opacity: 100%;
+    opacity: 1;
 }
 
 .edit_button_active {
-    opacity: 100%;
+    opacity: 1;
 }
 
 .region_newpoi {
@@ -311,7 +311,7 @@ export default {
     margin: 20px;
     height: 290px;
     border: solid 5px;
-    opacity: 60%;
+    opacity: 0.6;
     fill: white;
     display: flex;
     justify-content: center;
@@ -323,7 +323,7 @@ export default {
 }
 
 .region_newpoi:hover {
-    opacity: 100%;
+    opacity: 1;
 }
 
 .cross_close {
