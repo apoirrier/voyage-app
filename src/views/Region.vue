@@ -17,22 +17,23 @@
 
         <div class="region_flexbox">
             <div class="region_tabs">
-                <div v-for="(tab, index) in poiTabs" :key="tab.type" class="region_onetab" :style="tabStyle(index)" @click="changeTab(index)">
-                    {{ getCategoryName(tab.type) }}
-                </div>
-                <div v-for="(tab, index) in generalTabs" :key="tab.title" class="region_onetab" :style="tabStyle(index+poiTabs.length)" @click="changeTab(index+poiTabs.length)">
+                <div v-if="isEditing || poiTabs.activity.length > 0" class="region_onetab" :style="tabStyle('activity')" @click="changeTab('activity')"> Activités </div>
+                <div v-if="isEditing || poiTabs.restaurant.length > 0" class="region_onetab" :style="tabStyle('restaurant')" @click="changeTab('restaurant')"> Restaurants </div>
+                <div v-if="isEditing || poiTabs.hotel.length > 0" class="region_onetab" :style="tabStyle('hotel')" @click="changeTab('hotel')"> Hôtels </div>
+                    
+                <div v-for="(tab, index) in generalTabs" :key="tab.title" class="region_onetab" :style="tabStyle(index)" @click="changeTab(index)">
                     {{ tab.title }}
                 </div>
             </div>
             <div class="region_tab-content" :style="tabStyle(selectedTab)">
                 <div v-if="isPoiTab" class="region_tab-content-flex">
-                    <div v-for="(poi, idx) in poiTabs[selectedTab].pois" :key="poi.name" style="position: relative;">
+                    <div v-for="(poi, idx) in poiTabs[selectedTab]" :key="poi.name" style="position: relative;">
                         <Carte :nextUrl="nextUrl(poi.nextUrl)"
                             :address="poi.address"
                             :image="imageUrl(poi.image)"
                             :rate="poi.rate"
                             :name="poi.name"
-                            :type="poiTabs[selectedTab].type" />
+                            :type="selectedTab" />
                         <div v-if="isEditing" class="cross_close" @click="removePoi(poi.nextUrl, idx)"> X </div>
                     </div>
                     <div v-if="isEditing" class="region_newpoi" @click="createPoi">
@@ -42,16 +43,17 @@
                         </svg>
                     </div>
                 </div>
+                <div v-else-if="this.selectedTab === null" class="region_general-tab"/>
                 <div v-else class="region_general-tab">
-                    <span> {{ this.generalTabs[this.selectedTab - this.poiTabs.length].text }} </span>
-                    <img v-for="img in this.generalTabs[this.selectedTab - this.poiTabs.length].images" :key="img" :src="imageUrl(img)">
+                    <span> {{ this.generalTabs[this.selectedTab].text }} </span>
+                    <img v-for="img in this.generalTabs[this.selectedTab].images" :key="img" :src="imageUrl(img)">
                 </div>
                 <NewPoi v-if="isEditing && isPoiTab"
                     v-show="isCreatingPoi"
                     @close="cancelPoiCreation"
                     @confirm="poiCreated"
-                    :type='this.poiTabs[selectedTab].type'
-                    :error='creationError'
+                    :type="selectedTab"
+                    :error="creationError"
                 />
             </div>
         </div>
@@ -79,8 +81,10 @@ export default {
             name: "", 
             description: "",
             images: [],
-            selectedTab: 0,
-            poiTabs: [], 
+            selectedTab: null,
+            poiTabs: {activity: [],
+                      hotel: [],
+                      restaurant: []}, 
             generalTabs: [],
             isEditing: false,
             isCreatingPoi: false,
@@ -97,15 +101,15 @@ export default {
     computed: {
         ...mapState(['colors', 'categoryNames']),
         isPoiTab() {
-            return this.selectedTab < this.poiTabs.length
+            return typeof this.selectedTab === "string";
         }
     },
     methods: {
         tabStyle(id) {
             if(id != this.selectedTab)
                 return "background-color: darkgrey"
-            if(id < this.poiTabs.length)
-                return "background-color: " + this.colors[this.poiTabs[id].type]
+            if(this.isPoiTab)
+                return "background-color: " + this.colors[id]
             return "color: black; background-color: " + this.colors["general"]
         },
         changeTab(id) {
@@ -168,7 +172,7 @@ export default {
                         region: this.$route.params.region,
                         poi: id,
                         name: name,
-                        type: this.poiTabs[this.selectedTab].type
+                        type: this.selectedTab
                     }).then( ( answer ) => {
                     if(answer === undefined || answer.code >= 500) {
                         this.creationError = ("Error while trying to contact server... Please try again or contact an admin");
@@ -207,7 +211,7 @@ export default {
                         this.$alert("Unknown error: code " + answer.code);
                         return;
                     }
-                    this.poiTabs[this.selectedTab].pois.splice(index, 1);
+                    this.poiTabs[this.selectedTab].splice(index, 1);
                 });
             });
         },
@@ -231,23 +235,19 @@ export default {
                 this.description = data.description;
                 this.images = data.images;
                 this.generalTabs = data.generalTabs; 
-                if('activities' in data) {
-                    this.poiTabs.push({
-                        type: "activity",
-                        pois: data.activities
-                    })
+                if(this.generalTabs.length > 0)
+                    this.selectedTab = 0;
+                if('hotels' in data) {
+                    this.poiTabs.hotel = data.hotels;
+                    this.selectedTab = "hotel";
                 }
                 if('restaurants' in data) {
-                    this.poiTabs.push({
-                        type: "restaurant",
-                        pois: data.restaurants
-                    })
+                    this.poiTabs.restaurant = data.restaurants;
+                    this.selectedTab = "restaurant";
                 }
-                if('hotels' in data) {
-                    this.poiTabs.push({
-                        type: "hotel",
-                        pois: data.hotels
-                    })
+                if('activities' in data) {
+                    this.poiTabs.activity = data.activities;
+                    this.selectedTab = "activity";
                 }
             });
         },
