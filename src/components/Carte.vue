@@ -2,7 +2,7 @@
     <router-link :to="nextUrl" class="carte">
         <img class="carte_img" :src="image">
         <h2 class="carte_txt" style="margin: 7px; "> {{ name }} </h2>
-        <span class="carte_txt" style="margin-left: 10px; margin-right: 10px;"> {{ address }} </span>
+        <span class="carte_txt" style="margin-left: 10px; margin-right: 10px;"> {{ shortAddress }} </span>
         <Rating :score="rate" :type="type" />
     </router-link>
 </template>
@@ -22,6 +22,12 @@ export default {
         address: String,
         rate: Number,
         type: String,
+    },
+    computed: {
+        shortAddress () {
+            const allInfos = this.address.split(",");
+            return allInfos[allInfos.length - 1];
+        }
     }
 }
 </script>
