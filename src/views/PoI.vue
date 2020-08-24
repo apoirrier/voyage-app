@@ -5,10 +5,10 @@
     <div class="content"> 
         <div class="main-content">
         <h1 v-if="!isEditing">{{ name }}</h1>
-        <input v-else v-model="name">
+        <input v-else class="h1input" v-model="name">
         <Rating :score="currentRate" :type="type" />
         <p v-if="!isEditing" class="description-content">{{ description }}</p>
-        <textarea v-else v-model="description"/>
+        <textarea v-else class="pinput" v-model="description"/>
         <button v-if="isEditing" @click="addComment" style="margin: 20px;">
           Nouveau commentaire
         </button>

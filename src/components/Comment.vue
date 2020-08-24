@@ -6,7 +6,7 @@
             <div v-if="isEditing" class="cross_close_comment" @click="remove"> X </div>
         </div>
         <p v-if="!isEditing" class=comment-content> {{ content }} </p>
-        <textarea v-else v-model="content" @change="onChange" />
+        <textarea v-else class="pinput" v-model="content" @change="onChange" />
         <div class=comment-bottom>
             <Rating class="comment-rating" :score="rate" :type="type" :editable="isEditing" @after-rate="rateChanged"/>
             <div v-if="!isEditing"> {{ date }} </div>

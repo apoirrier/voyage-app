@@ -6,14 +6,14 @@
         <div style="display: flex; align-items: center; justify-content: space-between;">
             <div/>
             <h1 v-if="!isEditing"> {{ name }} </h1>
-            <input v-else v-model="name">
+            <input v-else class="h1input" v-model="name">
             <img v-if="isEditing" src="images/edit_active.png" class="edit_button edit_button_active" @click="finishEdit">
             <img v-else-if="!isEditing && loggedIn" src="images/edit.png" class="edit_button" @click="beginEdit">
             <div v-else />
         </div>
 
         <p v-if="!isEditing" class="region_description"> {{ description}} </p>
-        <textarea v-else style="width: 80vw; height: 300px;" v-model="description"/>
+        <textarea v-else class="pinput" v-model="description"/>
 
         <div class="region_flexbox">
             <div class="region_tabs">
@@ -51,7 +51,7 @@
                 <div v-else-if="this.selectedTab === null" class="region_general-tab"/>
                 <div v-else class="region_general-tab">
                     <span v-if="!isEditing"> {{ this.generalTabs[this.selectedTab].text }} </span>
-                    <textarea v-else style="width: 100%; height: 300px;" v-model="generalTabs[selectedTab].text"/>
+                    <textarea v-else class="pinput" v-model="generalTabs[selectedTab].text"/>
                     <div v-for="(img, idx) in this.generalTabs[this.selectedTab].images" :key="img.url()" style="position: relative;">
                         <img :src="imageUrl(img)">
                         <div v-if="isEditing" class="cross_close" style="right: 10px;" @click="removeImage(idx)"> X </div>
@@ -412,6 +412,30 @@ export default {
     color: red; 
     cursor: pointer;
     font-weight: bold;
+}
+
+.h1input {
+    display: block;
+    font-size: 2em;
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.pinput {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    text-align: justify;
+    width: -webkit-fill-available;
+    min-height: 200px;
+    font-size: 1em;
 }
 
 </style>
