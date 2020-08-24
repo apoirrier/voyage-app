@@ -13,7 +13,7 @@
         </div>
 
         <p v-if="!isEditing" class="region_description"> {{ description}} </p>
-        <textarea v-else v-model="description"/>
+        <textarea v-else style="width: 80vw; height: 300px;" v-model="description"/>
 
         <div class="region_flexbox">
             <div class="region_tabs">
@@ -22,8 +22,13 @@
                 <div v-if="isEditing || poiTabs.hotel.length > 0" class="region_onetab" :style="tabStyle('hotel')" @click="changeTab('hotel')"> Hôtels </div>
                     
                 <div v-for="(tab, index) in generalTabs" :key="tab.title" class="region_onetab" :style="tabStyle(index)" @click="changeTab(index)">
-                    {{ tab.title }}
+                    <span v-if="!isEditing || index != selectedTab"> {{ tab.title }} </span>
+                    <div v-else>
+                        <input style="width: 60px;" v-model="tab.title">
+                        <span style="color: red; cursor: pointer; font-weight: bold;" @click="removeTab"> X </span>
+                    </div>
                 </div>
+                <div v-if="isEditing" class="region_onetab" :style="tabStyle(-1)" style="width: 3%;" @click="newGeneralTab"> + </div>
             </div>
             <div class="region_tab-content" :style="tabStyle(selectedTab)">
                 <div v-if="isPoiTab" class="region_tab-content-flex">
@@ -45,8 +50,18 @@
                 </div>
                 <div v-else-if="this.selectedTab === null" class="region_general-tab"/>
                 <div v-else class="region_general-tab">
-                    <span> {{ this.generalTabs[this.selectedTab].text }} </span>
-                    <img v-for="img in this.generalTabs[this.selectedTab].images" :key="img" :src="imageUrl(img)">
+                    <span v-if="!isEditing"> {{ this.generalTabs[this.selectedTab].text }} </span>
+                    <textarea v-else style="width: 100%; height: 300px;" v-model="generalTabs[selectedTab].text"/>
+                    <div v-for="(img, idx) in this.generalTabs[this.selectedTab].images" :key="img.url()" style="position: relative;">
+                        <img :src="imageUrl(img)">
+                        <div v-if="isEditing" class="cross_close" style="right: 10px;" @click="removeImage(idx)"> X </div>
+                    </div>
+                    <input type="file" id="tab_image" ref="tab_image" accept="image/*" class="hidden_input" @change="handleFileUpload" />
+                    <label v-if="isEditing" for="tab_image" class="file_button" style="position: relative; top:0; right:0;padding-top: 20px;"> 
+                        <svg viewBox="0 0 512 512">
+                            <path d="M257,0C116.39,0,0,114.39,0,255s116.39,257,257,257s255-116.39,255-257S397.61,0,257,0z M392,285H287v107 c0,16.54-13.47,30-30,30c-16.54,0-30-13.46-30-30V285H120c-16.54,0-30-13.46-30-30c0-16.54,13.46-30,30-30h107V120 c0-16.54,13.46-30,30-30c16.53,0,30,13.46,30,30v105h105c16.53,0,30,13.46,30,30S408.53,285,392,285z" />
+                        </svg>
+                    </label>
                 </div>
                 <NewPoi v-if="isEditing && isPoiTab"
                     v-show="isCreatingPoi"
@@ -256,6 +271,42 @@ export default {
         },
         updateImages(img) {
             this.images = img;
+        },
+        removeTab() {
+            this.$confirm("Êtes-vous sûr de vouloir supprimer cet onglet ?").then( () => {
+                this.generalTabs.splice(this.selectedTab, 1);
+                if(this.generalTabs.length === 0)
+                    this.selectedTab = "hotel";
+                else if(this.selectedTab == this.generalTabs.length)
+                    this.selectedTab--;
+            });
+        },
+        async handleFileUpload() {
+            if(this.$refs.tab_image.files.length > 0 && this.$refs.tab_image.files[0] !== undefined) {
+                const fullname = this.$refs.tab_image.files[0].name.split(".");
+                const extension = "." + fullname[fullname.length - 1];
+                const fileToSave = new Parse.File('tab_' + this.generalTabs[this.selectedTab].title + extension, this.$refs.tab_image.files[0]);
+                fileToSave.save().then(() => {
+                    this.generalTabs[this.selectedTab].images.push(fileToSave);
+                }).catch( (error) => {
+                    this.$alert(error);
+                });
+            }
+        },
+        removeImage(idx) {
+            this.generalTabs[this.selectedTab].images.splice(idx, 1);
+        },
+        newGeneralTab() {
+            this.$prompt("Nouvel onglet").then( (title) => {
+                if(title.length !== 0) {
+                    this.generalTabs.push({
+                        title: title,
+                        text: "",
+                        images: []
+                    });
+                    this.selectedTab = this.generalTabs.length - 1;
+                }
+            });
         }
     }
 }
@@ -309,7 +360,7 @@ export default {
     display: flex;
     flex-direction: column;
     text-align: justify;
-    justify-content: center;
+    align-items: center;
     padding: 30px;
 }
 
