@@ -68,7 +68,8 @@ export default {
       images: [],
       iframeUrl: "",
       isEditing: false,
-      loggedIn: Parse.User.current() != undefined
+      loggedIn: Parse.User.current() != undefined,
+      rateChanged: false
     };
   },
   async created() {
@@ -79,6 +80,7 @@ export default {
   },
   computed: {
     currentRate() {
+      this.rateChanged;
       if(this.comments.length > 0)
         return this.comments[0].rate;
       return 0;
@@ -181,7 +183,8 @@ export default {
         content: data.content,
         date: data.date,
         rate: data.rate
-      }
+      };
+      this.rateChanged = !this.rateChanged;
     },
     removeComment(idx) {
       this.comments.splice(idx, 1);
