@@ -7,9 +7,9 @@ export default new Vuex.Store({
   state: {
     colors: {
       'restaurant': '#bb3131',
-      'hotel': '#23395d',
+      'hotel': '#1167b1',
       'activity': '#00561b',
-      'general': '#fcf4a3'
+      'general': '#fedc56'
     },
     categoryNames: {
       'restaurant': 'Restaurants',

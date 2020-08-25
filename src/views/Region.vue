@@ -23,9 +23,14 @@
                     
                 <div v-for="(tab, index) in generalTabs" :key="tab.title" class="region_onetab" :style="tabStyle(index)" @click="changeTab(index)">
                     <span v-if="!isEditing || index != selectedTab"> {{ tab.title }} </span>
-                    <div v-else>
+                    <div v-else style="display: flex;justify-content: space-between;">
                         <input style="width: 60px;" v-model="tab.title">
-                        <span style="color: red; cursor: pointer; font-weight: bold;" @click="removeTab"> X </span>
+                        <span class="cross_close_comment" @click="removeTab">
+                            <svg viewBox="0 0 365.71733 365">
+                                <path d="m356.339844 296.347656-286.613282-286.613281c-12.5-12.5-32.765624-12.5-45.246093 0l-15.105469 15.082031c-12.5 12.503906-12.5 32.769532 0 45.25l286.613281 286.613282c12.503907 12.5 32.769531 12.5 45.25 0l15.082031-15.082032c12.523438-12.480468 12.523438-32.75.019532-45.25zm0 0" />
+                                <path d="m295.988281 9.734375-286.613281 286.613281c-12.5 12.5-12.5 32.769532 0 45.25l15.082031 15.082032c12.503907 12.5 32.769531 12.5 45.25 0l286.632813-286.59375c12.503906-12.5 12.503906-32.765626 0-45.246094l-15.082032-15.082032c-12.5-12.523437-32.765624-12.523437-45.269531-.023437zm0 0" />
+                            </svg>
+                        </span>
                     </div>
                 </div>
                 <div v-if="isEditing" class="region_onetab" :style="tabStyle(-1)" style="width: 3%;" @click="newGeneralTab"> + </div>
@@ -39,7 +44,12 @@
                             :rate="poi.rate"
                             :name="poi.name"
                             :type="selectedTab" />
-                        <div v-if="isEditing" class="cross_close" @click="removePoi(poi.nextUrl, idx)"> X </div>
+                        <div v-if="isEditing" class="cross_close" @click="removePoi(poi.nextUrl, idx)">
+                            <svg viewBox="0 0 365.71733 365">
+                                <path d="m356.339844 296.347656-286.613282-286.613281c-12.5-12.5-32.765624-12.5-45.246093 0l-15.105469 15.082031c-12.5 12.503906-12.5 32.769532 0 45.25l286.613281 286.613282c12.503907 12.5 32.769531 12.5 45.25 0l15.082031-15.082032c12.523438-12.480468 12.523438-32.75.019532-45.25zm0 0" />
+                                <path d="m295.988281 9.734375-286.613281 286.613281c-12.5 12.5-12.5 32.769532 0 45.25l15.082031 15.082032c12.503907 12.5 32.769531 12.5 45.25 0l286.632813-286.59375c12.503906-12.5 12.503906-32.765626 0-45.246094l-15.082032-15.082032c-12.5-12.523437-32.765624-12.523437-45.269531-.023437zm0 0" />
+                            </svg>
+                        </div>
                     </div>
                     <div v-if="isEditing" class="region_newpoi" @click="createPoi">
                         <svg viewBox="0 0 512 512">
@@ -54,7 +64,12 @@
                     <textarea v-else class="pinput" v-model="generalTabs[selectedTab].text"/>
                     <div v-for="(img, idx) in this.generalTabs[this.selectedTab].images" :key="img.url()" style="position: relative;">
                         <img :src="imageUrl(img)">
-                        <div v-if="isEditing" class="cross_close" style="right: 10px;" @click="removeImage(idx)"> X </div>
+                        <div v-if="isEditing" class="cross_close" style="right: 10px;" @click="removeImage(idx)">
+                            <svg viewBox="0 0 365.71733 365">
+                                <path d="m356.339844 296.347656-286.613282-286.613281c-12.5-12.5-32.765624-12.5-45.246093 0l-15.105469 15.082031c-12.5 12.503906-12.5 32.769532 0 45.25l286.613281 286.613282c12.503907 12.5 32.769531 12.5 45.25 0l15.082031-15.082032c12.523438-12.480468 12.523438-32.75.019532-45.25zm0 0" />
+                                <path d="m295.988281 9.734375-286.613281 286.613281c-12.5 12.5-12.5 32.769532 0 45.25l15.082031 15.082032c12.503907 12.5 32.769531 12.5 45.25 0l286.632813-286.59375c12.503906-12.5 12.503906-32.765626 0-45.246094l-15.082032-15.082032c-12.5-12.523437-32.765624-12.523437-45.269531-.023437zm0 0" />
+                            </svg>
+                        </div>
                     </div>
                     <input type="file" id="tab_image" ref="tab_image" accept="image/*" class="hidden_input" @change="handleFileUpload" />
                     <label v-if="isEditing" for="tab_image" class="file_button" style="position: relative; top:0; right:0;padding-top: 20px;"> 
@@ -63,13 +78,6 @@
                         </svg>
                     </label>
                 </div>
-                <NewPoi v-if="isEditing && isPoiTab"
-                    v-show="isCreatingPoi"
-                    @close="cancelPoiCreation"
-                    @confirm="poiCreated"
-                    :type="selectedTab"
-                    :error="creationError"
-                />
             </div>
         </div>
     </div>
@@ -79,7 +87,6 @@
 import NavigationBar from '../components/NavigationBar.vue'
 import ImageSlider from '../components/ImageSlider.vue'
 import Carte from '../components/Carte.vue'
-import NewPoi from '../components/NewPoi.vue'
 import { mapState } from 'vuex'
 import Parse from 'parse'
 
@@ -89,7 +96,6 @@ export default {
         NavigationBar,
         ImageSlider,
         Carte,
-        NewPoi
     },
     data() {
         return {
@@ -102,7 +108,6 @@ export default {
                       restaurant: []}, 
             generalTabs: [],
             isEditing: false,
-            isCreatingPoi: false,
             creationError: "",
             loggedIn: Parse.User.current() != undefined,
         }
@@ -117,7 +122,16 @@ export default {
         ...mapState(['colors', 'categoryNames']),
         isPoiTab() {
             return typeof this.selectedTab === "string";
-        }
+        },
+        createPoiTitle() {
+            if(this.selectedTab == "restaurant")
+                return "Nouveau restaurant";
+            if(this.selectedTab == "hotel")
+                return "Nouvel hôtel";
+            if(this.selectedTab == "activity")
+                return "Nouvelle activité";
+            return "";
+        },
     },
     methods: {
         tabStyle(id) {
@@ -171,40 +185,36 @@ export default {
             });
         },
         createPoi() {
-            this.isCreatingPoi = true;
-        },
-        cancelPoiCreation() {
-            this.isCreatingPoi = false;
-        },
-        poiCreated(name) {
-            this.creationError = ""
-            if(name.length === 0)
-                this.creationError = "Un nom doit être fourni";
-            else {
-                this.creationError = "";
-                const id = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(' ').join('-').toLowerCase();
-                Parse.Cloud.run("createPoi", {
-                        region: this.$route.params.region,
-                        poi: id,
-                        name: name,
-                        type: this.selectedTab
-                    }).then( ( answer ) => {
-                    if(answer === undefined || answer.code >= 500) {
-                        this.creationError = ("Error while trying to contact server... Please try again or contact an admin");
-                        return;
-                    } else if(answer.code === 403) {
-                        this.creationError = ("User unauthorized, please log in");
-                        return;
-                    } else if(answer.code === 404)
-                        return this.$router.push('/404');
-                    else if(answer.code !== 200) {
-                        this.creationError = ("Unknown error: code " + answer.code);
-                        return;
-                    }
-                    this.isCreatingPoi = false;
-                    return this.$router.push((this.$route.fullPath + "/" + id + "?edit=1").split("//").join("/"));
-                });   
-            }
+            this.$prompt(this.createPoiTitle).then( (name) => {
+                this.creationError = ""
+                if(name.length === 0)
+                    this.creationError = "Un nom doit être fourni";
+                else {
+                    this.creationError = "";
+                    const id = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(' ').join('-').toLowerCase();
+                    Parse.Cloud.run("createPoi", {
+                            region: this.$route.params.region,
+                            poi: id,
+                            name: name,
+                            type: this.selectedTab
+                        }).then( ( answer ) => {
+                        if(answer === undefined || answer.code >= 500) {
+                            this.creationError = ("Error while trying to contact server... Please try again or contact an admin");
+                            return;
+                        } else if(answer.code === 403) {
+                            this.creationError = ("User unauthorized, please log in");
+                            return;
+                        } else if(answer.code === 404)
+                            return this.$router.push('/404');
+                        else if(answer.code !== 200) {
+                            this.creationError = ("Unknown error: code " + answer.code);
+                            return;
+                        }
+                        this.isCreatingPoi = false;
+                        return this.$router.push((this.$route.fullPath + "/" + id + "?edit=1").split("//").join("/"));
+                    });   
+                }
+            });
         },
         removePoi(id, index) {
             this.$confirm("Êtes-vous sûr de vouloir supprimer cette carte ?").then( () => {
@@ -408,10 +418,15 @@ export default {
 .cross_close {
     position: absolute; 
     top: 25px; 
-    right: 25px; 
-    color: red; 
+    right: 25px;  
     cursor: pointer;
-    font-weight: bold;
+    fill: red;
+    display: flex;
+}
+
+.cross_close svg {
+    width: 15px;
+    height: 15px;
 }
 
 .h1input {
@@ -423,6 +438,7 @@ export default {
     margin-inline-end: 0px;
     font-weight: bold;
     text-align: center;
+    border-width: 0;
 }
 
 .pinput {
@@ -436,6 +452,7 @@ export default {
     width: -webkit-fill-available;
     min-height: 200px;
     font-size: 1em;
+    border-width: 0;
 }
 
 </style>
