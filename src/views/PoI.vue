@@ -1,38 +1,41 @@
 <template>
-  <div class="poi">
-    <NavigationBar :name="name" :parent="parent" @login-change="changeLogin"/>
-    <ImageSlider :images="images" :altText="name" :isEditing="isEditing" :imageName="this.$route.params.poi" @images-changed="updateImages" />
-    <div class="content"> 
-        <div class="main-content">
-        <h1 v-if="!isEditing">{{ name }}</h1>
-        <input v-else class="h1input" v-model="name">
-        <Rating :score="currentRate" :type="type" />
-        <p v-if="!isEditing" class="description-content">{{ description }}</p>
-        <textarea v-else class="pinput" v-model="description"/>
-        <button v-if="isEditing" @click="addComment" style="margin: 20px;">
-          Nouveau commentaire
-        </button>
-        <Comment
-            v-for="(comment, idx) in comments"
-            :title="comment.title"
-            :content="comment.content"
-            :date="comment.date"
-            :rate="comment.rate"
-            :type="type"
-            :key="comment.date"
-            :isEditing="isEditing"
-            @hasChanged="editComment($event, idx)"
-            @remove="removeComment(idx)"
-        />
-        </div>
-        <div class="right-panel">
-          <img v-if="isEditing" src="images/edit_active.png" class="edit_button edit_button_active" @click="finishEdit">
-          <img v-else-if="!isEditing && loggedIn" src="images/edit.png" class="edit_button" @click="beginEdit">
-          <div v-else />
-          <InfoDocker :website="website" :address="address" :phone="phone" :mail="mail" 
-                    :type="type" :iframeUrl="iframeUrl" :isEditing="isEditing" 
-                    @hasChanged="updateInfos" />
-        </div>
+  <div>
+    <img v-if="!hasLoaded" src="images/teleport.jpg" style="height: 80%">
+    <div v-else class="poi">
+      <NavigationBar :name="name" :parent="parent" @login-change="changeLogin"/>
+      <ImageSlider :images="images" :altText="name" :isEditing="isEditing" :imageName="this.$route.params.poi" @images-changed="updateImages" />
+      <div class="content"> 
+          <div class="main-content">
+          <h1 v-if="!isEditing">{{ name }}</h1>
+          <input v-else class="h1input" v-model="name">
+          <Rating :score="currentRate" :type="type" />
+          <p v-if="!isEditing" class="description-content">{{ description }}</p>
+          <textarea v-else class="pinput" v-model="description"/>
+          <button v-if="isEditing" @click="addComment" style="margin: 20px;">
+            Nouveau commentaire
+          </button>
+          <Comment
+              v-for="(comment, idx) in comments"
+              :title="comment.title"
+              :content="comment.content"
+              :date="comment.date"
+              :rate="comment.rate"
+              :type="type"
+              :key="comment.date"
+              :isEditing="isEditing"
+              @hasChanged="editComment($event, idx)"
+              @remove="removeComment(idx)"
+          />
+          </div>
+          <div class="right-panel">
+            <img v-if="isEditing" src="images/edit_active.png" class="edit_button edit_button_active" @click="finishEdit">
+            <img v-else-if="!isEditing && loggedIn" src="images/edit.png" class="edit_button" @click="beginEdit">
+            <div v-else />
+            <InfoDocker :website="website" :address="address" :phone="phone" :mail="mail" 
+                      :type="type" :iframeUrl="iframeUrl" :isEditing="isEditing" 
+                      @hasChanged="updateInfos" />
+          </div>
+      </div>
     </div>
   </div>
 </template>
@@ -69,7 +72,8 @@ export default {
       iframeUrl: "",
       isEditing: false,
       loggedIn: Parse.User.current() != undefined,
-      rateChanged: false
+      rateChanged: false,
+      hasLoaded: false
     };
   },
   async created() {
@@ -124,6 +128,7 @@ export default {
         this.iframeUrl = data.iframeUrl;
         if(this.$route.query.edit == 1)
           this.isEditing = true;
+        this.hasLoaded = true;
       });
     },
     beginEdit() {

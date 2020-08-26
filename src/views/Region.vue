@@ -1,82 +1,85 @@
 <template>
-    <div class=region>
-        <NavigationBar :name="name" @login-change="changeLogin"/>
-        <ImageSlider :images="images" :altText="name" :isEditing="isEditing" :imageName="this.$route.params.region" @images-changed="updateImages" />
+    <div>
+        <img v-if="!hasLoaded" src="images/teleport.jpg" style="height: 80%">
+        <div v-else class=region>
+            <NavigationBar :name="name" @login-change="changeLogin"/>
+            <ImageSlider :images="images" :altText="name" :isEditing="isEditing" :imageName="this.$route.params.region" @images-changed="updateImages" />
 
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-            <div/>
-            <h1 v-if="!isEditing"> {{ name }} </h1>
-            <input v-else class="h1input" v-model="name">
-            <img v-if="isEditing" src="images/edit_active.png" class="edit_button edit_button_active" @click="finishEdit">
-            <img v-else-if="!isEditing && loggedIn" src="images/edit.png" class="edit_button" @click="beginEdit">
-            <div v-else />
-        </div>
-
-        <p v-if="!isEditing" class="region_description"> {{ description}} </p>
-        <textarea v-else class="pinput" v-model="description"/>
-
-        <div class="region_flexbox">
-            <div class="region_tabs">
-                <div v-if="isEditing || poiTabs.activity.length > 0" class="region_onetab" :style="tabStyle('activity')" @click="changeTab('activity')"> Activités </div>
-                <div v-if="isEditing || poiTabs.restaurant.length > 0" class="region_onetab" :style="tabStyle('restaurant')" @click="changeTab('restaurant')"> Restaurants </div>
-                <div v-if="isEditing || poiTabs.hotel.length > 0" class="region_onetab" :style="tabStyle('hotel')" @click="changeTab('hotel')"> Hôtels </div>
-                    
-                <div v-for="(tab, index) in generalTabs" :key="tab.title" class="region_onetab" :style="tabStyle(index)" @click="changeTab(index)">
-                    <span v-if="!isEditing || index != selectedTab"> {{ tab.title }} </span>
-                    <div v-else style="display: flex;justify-content: space-between;">
-                        <input style="width: 60px;" v-model="tab.title">
-                        <span class="cross_close_comment" @click="removeTab">
-                            <svg viewBox="0 0 365.71733 365">
-                                <path d="m356.339844 296.347656-286.613282-286.613281c-12.5-12.5-32.765624-12.5-45.246093 0l-15.105469 15.082031c-12.5 12.503906-12.5 32.769532 0 45.25l286.613281 286.613282c12.503907 12.5 32.769531 12.5 45.25 0l15.082031-15.082032c12.523438-12.480468 12.523438-32.75.019532-45.25zm0 0" />
-                                <path d="m295.988281 9.734375-286.613281 286.613281c-12.5 12.5-12.5 32.769532 0 45.25l15.082031 15.082032c12.503907 12.5 32.769531 12.5 45.25 0l286.632813-286.59375c12.503906-12.5 12.503906-32.765626 0-45.246094l-15.082032-15.082032c-12.5-12.523437-32.765624-12.523437-45.269531-.023437zm0 0" />
-                            </svg>
-                        </span>
-                    </div>
-                </div>
-                <div v-if="isEditing" class="region_onetab" :style="tabStyle(-1)" style="width: 3%;" @click="newGeneralTab"> + </div>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div/>
+                <h1 v-if="!isEditing"> {{ name }} </h1>
+                <input v-else class="h1input" v-model="name">
+                <img v-if="isEditing" src="images/edit_active.png" class="edit_button edit_button_active" @click="finishEdit">
+                <img v-else-if="!isEditing && loggedIn" src="images/edit.png" class="edit_button" @click="beginEdit">
+                <div v-else />
             </div>
-            <div class="region_tab-content" :style="tabStyle(selectedTab)">
-                <div v-if="isPoiTab" class="region_tab-content-flex">
-                    <div v-for="(poi, idx) in poiTabs[selectedTab]" :key="poi.name" style="position: relative;">
-                        <Carte :nextUrl="nextUrl(poi.nextUrl)"
-                            :address="poi.address"
-                            :image="imageUrl(poi.image)"
-                            :rate="poi.rate"
-                            :name="poi.name"
-                            :type="selectedTab" />
-                        <div v-if="isEditing" class="cross_close" @click="removePoi(poi.nextUrl, idx)">
-                            <svg viewBox="0 0 365.71733 365">
-                                <path d="m356.339844 296.347656-286.613282-286.613281c-12.5-12.5-32.765624-12.5-45.246093 0l-15.105469 15.082031c-12.5 12.503906-12.5 32.769532 0 45.25l286.613281 286.613282c12.503907 12.5 32.769531 12.5 45.25 0l15.082031-15.082032c12.523438-12.480468 12.523438-32.75.019532-45.25zm0 0" />
-                                <path d="m295.988281 9.734375-286.613281 286.613281c-12.5 12.5-12.5 32.769532 0 45.25l15.082031 15.082032c12.503907 12.5 32.769531 12.5 45.25 0l286.632813-286.59375c12.503906-12.5 12.503906-32.765626 0-45.246094l-15.082032-15.082032c-12.5-12.523437-32.765624-12.523437-45.269531-.023437zm0 0" />
-                            </svg>
+
+            <p v-if="!isEditing" class="region_description"> {{ description}} </p>
+            <textarea v-else class="pinput" v-model="description"/>
+
+            <div class="region_flexbox">
+                <div class="region_tabs">
+                    <div v-if="isEditing || poiTabs.activity.length > 0" class="region_onetab" :style="tabStyle('activity')" @click="changeTab('activity')"> Activités </div>
+                    <div v-if="isEditing || poiTabs.restaurant.length > 0" class="region_onetab" :style="tabStyle('restaurant')" @click="changeTab('restaurant')"> Restaurants </div>
+                    <div v-if="isEditing || poiTabs.hotel.length > 0" class="region_onetab" :style="tabStyle('hotel')" @click="changeTab('hotel')"> Hôtels </div>
+                        
+                    <div v-for="(tab, index) in generalTabs" :key="tab.title" class="region_onetab" :style="tabStyle(index)" @click="changeTab(index)">
+                        <span v-if="!isEditing || index != selectedTab"> {{ tab.title }} </span>
+                        <div v-else style="display: flex;justify-content: space-between;">
+                            <input style="width: 60px;" v-model="tab.title">
+                            <span class="cross_close_comment" @click="removeTab">
+                                <svg viewBox="0 0 365.71733 365">
+                                    <path d="m356.339844 296.347656-286.613282-286.613281c-12.5-12.5-32.765624-12.5-45.246093 0l-15.105469 15.082031c-12.5 12.503906-12.5 32.769532 0 45.25l286.613281 286.613282c12.503907 12.5 32.769531 12.5 45.25 0l15.082031-15.082032c12.523438-12.480468 12.523438-32.75.019532-45.25zm0 0" />
+                                    <path d="m295.988281 9.734375-286.613281 286.613281c-12.5 12.5-12.5 32.769532 0 45.25l15.082031 15.082032c12.503907 12.5 32.769531 12.5 45.25 0l286.632813-286.59375c12.503906-12.5 12.503906-32.765626 0-45.246094l-15.082032-15.082032c-12.5-12.523437-32.765624-12.523437-45.269531-.023437zm0 0" />
+                                </svg>
+                            </span>
                         </div>
                     </div>
-                    <div v-if="isEditing" class="region_newpoi" @click="createPoi">
-                        <svg viewBox="0 0 512 512">
-                            <path stroke-width="3" d="M256,0C114.833,0,0,114.833,0,256s114.833,256,256,256s256-114.853,256-256S397.167,0,256,0z M256,472.341 c-119.275,0-216.341-97.046-216.341-216.341S136.725,39.659,256,39.659S472.341,136.705,472.341,256S375.295,472.341,256,472.341z" />
-                            <path stroke-width="3" d="M355.148,234.386H275.83v-79.318c0-10.946-8.864-19.83-19.83-19.83s-19.83,8.884-19.83,19.83v79.318h-79.318 c-10.966,0-19.83,8.884-19.83,19.83s8.864,19.83,19.83,19.83h79.318v79.318c0,10.946,8.864,19.83,19.83,19.83 s19.83-8.884,19.83-19.83v-79.318h79.318c10.966,0,19.83-8.884,19.83-19.83S366.114,234.386,355.148,234.386z" />
-                        </svg>
-                    </div>
+                    <div v-if="isEditing" class="region_onetab" :style="tabStyle(-1)" style="width: 3%;" @click="newGeneralTab"> + </div>
                 </div>
-                <div v-else-if="this.selectedTab === null" class="region_general-tab"/>
-                <div v-else class="region_general-tab">
-                    <span v-if="!isEditing"> {{ this.generalTabs[this.selectedTab].text }} </span>
-                    <textarea v-else class="pinput" v-model="generalTabs[selectedTab].text"/>
-                    <div v-for="(img, idx) in this.generalTabs[this.selectedTab].images" :key="img.url()" style="position: relative;">
-                        <img :src="imageUrl(img)">
-                        <div v-if="isEditing" class="cross_close" style="right: 10px;" @click="removeImage(idx)">
-                            <svg viewBox="0 0 365.71733 365">
-                                <path d="m356.339844 296.347656-286.613282-286.613281c-12.5-12.5-32.765624-12.5-45.246093 0l-15.105469 15.082031c-12.5 12.503906-12.5 32.769532 0 45.25l286.613281 286.613282c12.503907 12.5 32.769531 12.5 45.25 0l15.082031-15.082032c12.523438-12.480468 12.523438-32.75.019532-45.25zm0 0" />
-                                <path d="m295.988281 9.734375-286.613281 286.613281c-12.5 12.5-12.5 32.769532 0 45.25l15.082031 15.082032c12.503907 12.5 32.769531 12.5 45.25 0l286.632813-286.59375c12.503906-12.5 12.503906-32.765626 0-45.246094l-15.082032-15.082032c-12.5-12.523437-32.765624-12.523437-45.269531-.023437zm0 0" />
+                <div class="region_tab-content" :style="tabStyle(selectedTab)">
+                    <div v-if="isPoiTab" class="region_tab-content-flex">
+                        <div v-for="(poi, idx) in poiTabs[selectedTab]" :key="poi.name" style="position: relative;">
+                            <Carte :nextUrl="nextUrl(poi.nextUrl)"
+                                :address="poi.address"
+                                :image="imageUrl(poi.image)"
+                                :rate="poi.rate"
+                                :name="poi.name"
+                                :type="selectedTab" />
+                            <div v-if="isEditing" class="cross_close" @click="removePoi(poi.nextUrl, idx)">
+                                <svg viewBox="0 0 365.71733 365">
+                                    <path d="m356.339844 296.347656-286.613282-286.613281c-12.5-12.5-32.765624-12.5-45.246093 0l-15.105469 15.082031c-12.5 12.503906-12.5 32.769532 0 45.25l286.613281 286.613282c12.503907 12.5 32.769531 12.5 45.25 0l15.082031-15.082032c12.523438-12.480468 12.523438-32.75.019532-45.25zm0 0" />
+                                    <path d="m295.988281 9.734375-286.613281 286.613281c-12.5 12.5-12.5 32.769532 0 45.25l15.082031 15.082032c12.503907 12.5 32.769531 12.5 45.25 0l286.632813-286.59375c12.503906-12.5 12.503906-32.765626 0-45.246094l-15.082032-15.082032c-12.5-12.523437-32.765624-12.523437-45.269531-.023437zm0 0" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div v-if="isEditing" class="region_newpoi" @click="createPoi">
+                            <svg viewBox="0 0 512 512">
+                                <path stroke-width="3" d="M256,0C114.833,0,0,114.833,0,256s114.833,256,256,256s256-114.853,256-256S397.167,0,256,0z M256,472.341 c-119.275,0-216.341-97.046-216.341-216.341S136.725,39.659,256,39.659S472.341,136.705,472.341,256S375.295,472.341,256,472.341z" />
+                                <path stroke-width="3" d="M355.148,234.386H275.83v-79.318c0-10.946-8.864-19.83-19.83-19.83s-19.83,8.884-19.83,19.83v79.318h-79.318 c-10.966,0-19.83,8.884-19.83,19.83s8.864,19.83,19.83,19.83h79.318v79.318c0,10.946,8.864,19.83,19.83,19.83 s19.83-8.884,19.83-19.83v-79.318h79.318c10.966,0,19.83-8.884,19.83-19.83S366.114,234.386,355.148,234.386z" />
                             </svg>
                         </div>
                     </div>
-                    <input type="file" id="tab_image" ref="tab_image" accept="image/*" class="hidden_input" @change="handleFileUpload" />
-                    <label v-if="isEditing" for="tab_image" class="file_button" style="position: relative; top:0; right:0;padding-top: 20px;"> 
-                        <svg viewBox="0 0 512 512">
-                            <path d="M257,0C116.39,0,0,114.39,0,255s116.39,257,257,257s255-116.39,255-257S397.61,0,257,0z M392,285H287v107 c0,16.54-13.47,30-30,30c-16.54,0-30-13.46-30-30V285H120c-16.54,0-30-13.46-30-30c0-16.54,13.46-30,30-30h107V120 c0-16.54,13.46-30,30-30c16.53,0,30,13.46,30,30v105h105c16.53,0,30,13.46,30,30S408.53,285,392,285z" />
-                        </svg>
-                    </label>
+                    <div v-else-if="this.selectedTab === null" class="region_general-tab"/>
+                    <div v-else class="region_general-tab">
+                        <span v-if="!isEditing"> {{ this.generalTabs[this.selectedTab].text }} </span>
+                        <textarea v-else class="pinput" v-model="generalTabs[selectedTab].text"/>
+                        <div v-for="(img, idx) in this.generalTabs[this.selectedTab].images" :key="img.url()" style="position: relative;">
+                            <img :src="imageUrl(img)">
+                            <div v-if="isEditing" class="cross_close" style="right: 10px;" @click="removeImage(idx)">
+                                <svg viewBox="0 0 365.71733 365">
+                                    <path d="m356.339844 296.347656-286.613282-286.613281c-12.5-12.5-32.765624-12.5-45.246093 0l-15.105469 15.082031c-12.5 12.503906-12.5 32.769532 0 45.25l286.613281 286.613282c12.503907 12.5 32.769531 12.5 45.25 0l15.082031-15.082032c12.523438-12.480468 12.523438-32.75.019532-45.25zm0 0" />
+                                    <path d="m295.988281 9.734375-286.613281 286.613281c-12.5 12.5-12.5 32.769532 0 45.25l15.082031 15.082032c12.503907 12.5 32.769531 12.5 45.25 0l286.632813-286.59375c12.503906-12.5 12.503906-32.765626 0-45.246094l-15.082032-15.082032c-12.5-12.523437-32.765624-12.523437-45.269531-.023437zm0 0" />
+                                </svg>
+                            </div>
+                        </div>
+                        <input type="file" id="tab_image" ref="tab_image" accept="image/*" class="hidden_input" @change="handleFileUpload" />
+                        <label v-if="isEditing" for="tab_image" class="file_button" style="position: relative; top:0; right:0;padding-top: 20px;"> 
+                            <svg viewBox="0 0 512 512">
+                                <path d="M257,0C116.39,0,0,114.39,0,255s116.39,257,257,257s255-116.39,255-257S397.61,0,257,0z M392,285H287v107 c0,16.54-13.47,30-30,30c-16.54,0-30-13.46-30-30V285H120c-16.54,0-30-13.46-30-30c0-16.54,13.46-30,30-30h107V120 c0-16.54,13.46-30,30-30c16.53,0,30,13.46,30,30v105h105c16.53,0,30,13.46,30,30S408.53,285,392,285z" />
+                            </svg>
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -110,6 +113,7 @@ export default {
             isEditing: false,
             creationError: "",
             loggedIn: Parse.User.current() != undefined,
+            hasLoaded: false
         }
     },
     async created() {
@@ -274,6 +278,7 @@ export default {
                     this.poiTabs.activity = data.activities;
                     this.selectedTab = "activity";
                 }
+                this.hasLoaded = true;
             });
         },
         changeLogin(newValue) {
@@ -339,12 +344,14 @@ export default {
 }
 
 .region_onetab {
-    padding: 10px;
     color: #fefefe;
     border-radius: 10px 10px 0 0;
     cursor: pointer;
     text-align: center;
-    width: 10%;
+    width: 100px;
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
     margin-right: 10px;
 }
 
