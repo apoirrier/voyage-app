@@ -278,6 +278,8 @@ export default {
                     this.poiTabs.activity = data.activities;
                     this.selectedTab = "activity";
                 }
+                if(this.$route.query.edit == 1)
+                    this.isEditing = true;
                 this.hasLoaded = true;
             });
         },

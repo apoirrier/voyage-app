@@ -1,6 +1,10 @@
 <template>
     <div class=navigation>
-        <div> <router-link to="/"> Monde </router-link> > <router-link v-if="hasParent" :to="parent.url"> {{ parent.name }} </router-link> <span v-if="hasParent"> > </span> {{ name }} </div>
+        <div> 
+            <span v-if="!isWorld"> <router-link to="/"> Monde </router-link> > </span> <span v-else> Monde </span>
+            <router-link v-if="hasParent" :to="parent.url"> {{ parent.name }} </router-link> <span v-if="hasParent"> > </span> 
+            {{ name }} 
+        </div>
         <div> 
             <span v-if="loggedIn" @click="logout"> Logout </span>
             <span v-else @click="showDialog"> Login </span>
@@ -23,10 +27,7 @@ export default {
     },
     props: {
         parent: Object,
-        name: {
-            type: String,
-            required: true
-        },
+        name: String
     },
     data() { return {
         loggedIn: Parse.User.current() != undefined,
@@ -36,6 +37,9 @@ export default {
         hasParent() {
             return this.parent != null
         },
+        isWorld() {
+            return this.name == null
+        }
     },
     methods: {
         async logout() {

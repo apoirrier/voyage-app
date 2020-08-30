@@ -1,8 +1,7 @@
 <template>
-<div>
-    <div class="list_region">
-        <button @click="createRegion"> Ajouter une région </button>
-    </div>
+<div class="home">
+    <NavigationBar @login-change="changeLogin"/>
+    <button v-if="loggedIn" class="new_region" @click="newRegionClicked"> Nouvelle région </button>
     <div id="mapContainer" class="basemap"></div>
 </div>
 </template>
@@ -10,14 +9,25 @@
 <script>
 import Parse from 'parse'
 import mapboxgl from "mapbox-gl";
+import { mapState } from 'vuex'
+import NavigationBar from '../components/NavigationBar.vue'
 
 export default {
     name: "Home",
+    components: {
+        NavigationBar
+    },
     data() {
         return {
             regions: [],
-            map: null
+            map: null,
+            loggedIn: Parse.User.current() != undefined,
+            mouseMarker: null,
+            isAddingMarker: false,
         }
+    },
+    computed: {
+        ...mapState["mapboxToken"]
     },
     mounted() {
         mapboxgl.accessToken = "pk.eyJ1IjoiYXBvaXJyaWVyIiwiYSI6ImNrZWc2NDRzbDB3dTEycm95M3E2bzJnOXIifQ.K5jGE4KPX3QQdKZ32sB1hw";
@@ -31,6 +41,7 @@ export default {
         this.map.addControl(nav, "bottom-right");
 
         this.map.on("load", this.addMarkers);
+        this.map.on("click", this.clickOnMap);
     },
     created() {
         this.loadData();
@@ -39,6 +50,9 @@ export default {
         '$route': 'loadData'
     },
     methods: {
+        changeLogin(newValue) {
+            this.loggedIn = newValue;
+        },
         loadData() {
             Parse.Cloud.run("listRegion").then( (answer) => {
                 if(answer === undefined || answer.code >= 500) {
@@ -51,11 +65,11 @@ export default {
                 this.regions = answer.regions;
             });
         },
-        async createRegion() {
+        async createRegion(coordinates) {
             this.$prompt("Nouvelle région").then( (name) => {
                 if(name === undefined || name === "")
                     return;
-                Parse.Cloud.run("createRegion", {name: name}).then( (answer) => {
+                Parse.Cloud.run("createRegion", {name: name, coordinates: coordinates}).then( (answer) => {
                     if(answer === undefined || answer.code >= 500) {
                         this.$alert("Error while trying to contact server... Please try again or contact an admin");
                         return;
@@ -70,7 +84,8 @@ export default {
                         this.$alert("Unknown error: code " + answer.code);
                         return;
                     }
-                    this.loadData();
+                    const id = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(' ').join('-').toLowerCase();
+                    return this.$router.push((this.$route.fullPath + "/world/" + id + "?edit=1").split("//").join("/"));
                 });
             });
         },
@@ -82,31 +97,49 @@ export default {
                              "> <h1> " + region.name + " </h1> </a>");
                 new mapboxgl.Marker().setLngLat(region.coordinates).setPopup(popup).addTo(this.map);
             });
+            this.mouseMarker = new mapboxgl.Marker();
+            this.mouseMarker.setLngLat([0,0]);
+            this.map.on("mousemove", (e) => {
+                if(this.isAddingMarker)
+                    this.mouseMarker.setLngLat(e.lngLat);
+            });
         },
         imageUrl(image) {
             if(image === undefined)
                 return "images/undefined"
             return image.url();
         },
+        async clickOnMap(e) {
+            if(this.isAddingMarker) {
+                this.isAddingMarker = false;
+                this.createRegion([e.lngLat.lng, e.lngLat.lat]);
+            }
+        },
+        newRegionClicked() {
+            this.isAddingMarker = true;
+            this.mouseMarker.addTo(this.map);
+        }
     }
 }
 </script>
 
 <style lang="scss">
-.list_region {
+.home {
     display: flex;
     flex-direction: column;
-    align-items: center;
 }
 
-.list_region button {
+.new_region {
     width: fit-content;
     margin: 10px;
+    align-self: center;
+    margin: 0;
 }
 
 .basemap {
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - 70px);
+  margin-top: 10px;
 }
 
 .popup {
