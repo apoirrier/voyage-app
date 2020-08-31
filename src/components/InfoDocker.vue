@@ -7,7 +7,7 @@
         </a>
         <div v-else-if="isEditing">
             <img class=infodocker_icon src="images/www.png">
-            <input v-model="website" @change="onChange">
+            <input type="url" v-model="website" @change="onChange">
         </div>
 
         <a class="infodocker_item" :href="mailto" v-if="hasMail && !isEditing" style="color: #e7e7e7;"> 
@@ -15,7 +15,7 @@
         </a>
         <div v-else-if="isEditing">
             <img class=infodocker_icon src="images/at.png">
-            <input v-model="mail" @change="onChange">
+            <input type="email" v-model="mail" @change="onChange">
         </div>
 
         <div class="infodocker_item" v-if="hasPhone && !isEditing">
@@ -23,7 +23,7 @@
         </div>
         <div v-else-if="isEditing">
             <img class=infodocker_icon src="images/phone.png">
-            <input v-model="phone" @change="onChange">
+            <input type="tel" v-model="phone" @change="onChange">
         </div>
 
         <div class="infodocker_item" v-if="hasAddress && !isEditing">
@@ -48,7 +48,7 @@
         </div>
         <div v-else>
             Minimap: 
-            <input v-model="iframeUrl" @change="onChange">
+            <input type="url" v-model="iframeUrl" @change="onChange">
         </div>
         <p/>
     </div>

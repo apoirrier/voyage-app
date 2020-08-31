@@ -2,7 +2,7 @@
     <div class=comment>
         <div class=comment-title>
             <span v-if="!isEditing"> {{ title }} </span>
-            <input v-else v-model="title" @change="onChange">
+            <input v-else type="text" v-model="title" @change="onChange">
             <div v-if="isEditing" class="cross_close_comment" @click="remove"> 
                 <svg viewBox="0 0 365.71733 365">
                     <path d="m356.339844 296.347656-286.613282-286.613281c-12.5-12.5-32.765624-12.5-45.246093 0l-15.105469 15.082031c-12.5 12.503906-12.5 32.769532 0 45.25l286.613281 286.613282c12.503907 12.5 32.769531 12.5 45.25 0l15.082031-15.082032c12.523438-12.480468 12.523438-32.75.019532-45.25zm0 0" />
@@ -15,7 +15,7 @@
         <div class=comment-bottom>
             <Rating class="comment-rating" :score="rate" :type="type" :editable="isEditing" @after-rate="rateChanged"/>
             <div v-if="!isEditing"> {{ date }} </div>
-            <input v-else v-model="date" @change="onChange">
+            <input type="date" v-else v-model="date" @change="onChange">
         </div>
     </div>
 </template>

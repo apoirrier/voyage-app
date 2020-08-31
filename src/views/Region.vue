@@ -23,7 +23,7 @@
                     <div v-if="isEditing || poiTabs.restaurant.length > 0" class="region_onetab" :style="tabStyle('restaurant')" @click="changeTab('restaurant')"> Restaurants </div>
                     <div v-if="isEditing || poiTabs.hotel.length > 0" class="region_onetab" :style="tabStyle('hotel')" @click="changeTab('hotel')"> Hôtels </div>
                         
-                    <div v-for="(tab, index) in generalTabs" :key="tab.title" class="region_onetab" :style="tabStyle(index)" @click="changeTab(index)">
+                    <div v-for="(tab, index) in generalTabs" :key="index" class="region_onetab" :style="tabStyle(index)" @click="changeTab(index)">
                         <span v-if="!isEditing || index != selectedTab"> {{ tab.title }} </span>
                         <div v-else style="display: flex;justify-content: space-between;">
                             <input style="width: 60px;" v-model="tab.title">
@@ -62,7 +62,7 @@
                     </div>
                     <div v-else-if="this.selectedTab === null" class="region_general-tab"/>
                     <div v-else class="region_general-tab">
-                        <span v-if="!isEditing"> {{ this.generalTabs[this.selectedTab].text }} </span>
+                        <span v-if="!isEditing" v-html="generalTabs[selectedTab].text">  </span>
                         <textarea v-else class="pinput" v-model="generalTabs[selectedTab].text"/>
                         <div v-for="(img, idx) in this.generalTabs[this.selectedTab].images" :key="img.url()" style="position: relative;">
                             <img :src="imageUrl(img)">
