@@ -3,7 +3,7 @@
         <img class="carte_img" :src="image">
         <h2 class="carte_txt" style="margin: 7px; "> {{ name }} </h2>
         <span class="carte_txt" style="margin-left: 10px; margin-right: 10px;"> {{ shortAddress }} </span>
-        <Rating :score="rate" :type="type" />
+        <Rating v-if="this.rate !== undefined" :score="rate" :type="type" />
     </router-link>
 </template>
 

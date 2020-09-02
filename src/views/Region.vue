@@ -62,7 +62,7 @@
                     </div>
                     <div v-else-if="this.selectedTab === null" class="region_general-tab"/>
                     <div v-else class="region_general-tab">
-                        <span v-if="!isEditing" v-html="generalTabs[selectedTab].text">  </span>
+                        <span v-if="!isEditing" v-html="generalTabs[selectedTab].text" style="align-self: flex-start;">  </span>
                         <textarea v-else class="pinput" v-model="generalTabs[selectedTab].text"/>
                         <div v-for="(img, idx) in this.generalTabs[this.selectedTab].images" :key="img.url()" style="position: relative;">
                             <img :src="imageUrl(img)">
@@ -121,6 +121,18 @@ export default {
     },
     watch: {
         '$route': 'loadData'
+    },
+    async beforeRouteLeave(to, from, next) {
+        if(this.isEditing) {
+            try {
+              const isOk = await this.$confirm("Sauvegarder ?");
+              if(isOk)
+                await this.finishEdit();
+            } finally {
+              next();
+            }
+        } else
+            next();
     },
     computed: {
         ...mapState(['colors', 'categoryNames']),

@@ -82,6 +82,18 @@ export default {
   watch: {
     '$route': 'loadData'
   },
+  async beforeRouteLeave(to, from, next) {
+        if(this.isEditing) {
+            try {
+              const isOk = await this.$confirm("Sauvegarder ?");
+              if(isOk)
+                await this.finishEdit();
+            } finally {
+              next();
+            }
+        } else
+          next();
+    },
   computed: {
     currentRate() {
       this.rateChanged;
