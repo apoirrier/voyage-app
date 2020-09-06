@@ -227,7 +227,7 @@ export default {
                             return;
                         }
                         this.isCreatingPoi = false;
-                        return this.$router.push((this.$route.fullPath + "/" + id + "?edit=1").split("//").join("/"));
+                        return this.$router.push(("/world/" + this.$route.params.region + "/" + id + "?edit=1").split("//").join("/"));
                     });   
                 }
             });
