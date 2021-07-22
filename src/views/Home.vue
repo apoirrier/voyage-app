@@ -107,7 +107,7 @@ export default {
                 return;
             this.markersAdded = true;
             this.regions.forEach(region => {
-                const popup = new mapboxgl.Popup({maxWidth: '300px', className: 'popup'})
+                const popup = new mapboxgl.Popup({maxWidth: '300px', offset: 25})
                     .setHTML("<a href='#/world/" + region.url + 
                              "'> <img src=" + this.imageUrl(region.image) + 
                              "> <h1> " + region.name + " </h1> </a>");
@@ -175,22 +175,37 @@ export default {
   left: 0;
 }
 
-.popup {
+.mapboxgl-popup-content {
     display: flex;
     cursor: pointer;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.popup img {
+.mapboxgl-popup-content img {
     width: 300px;
     height: 125px;
     object-fit: cover;
     float: center;
     margin-left: -10px;
     margin-top: -10px;
+    border-radius: 3px 3px 0 0;
 }
 
-.popup h1 {
-    margin: 5px;
+.mapboxgl-popup-content h1 {
+    margin-bottom: -10px;
+    margin-top: 1px;
+}
+
+.mapboxgl-popup-close-button {
+    display: none;
+}
+
+.mapboxgl-popup-tip {
+    display: none;
+}
+
+.mapboxgl-marker {
+    cursor: pointer;
 }
 
 .marker {
