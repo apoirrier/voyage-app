@@ -9,7 +9,6 @@
 <script>
 import Parse from 'parse'
 import mapboxgl from "mapbox-gl";
-import { mapState } from 'vuex'
 import NavigationBar from '../components/NavigationBar.vue'
 
 export default {
@@ -25,9 +24,6 @@ export default {
             mouseMarker: null,
             isAddingMarker: false,
         }
-    },
-    computed: {
-        ...mapState["mapboxToken"]
     },
     mounted() {
         mapboxgl.accessToken = "pk.eyJ1IjoiYXBvaXJyaWVyIiwiYSI6ImNrZWc2NDRzbDB3dTEycm95M3E2bzJnOXIifQ.K5jGE4KPX3QQdKZ32sB1hw";

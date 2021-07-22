@@ -1,18 +1,21 @@
 <template>
     <div class=navigation>
-        <div> 
-            <span v-if="!isWorld"> <router-link to="/"> Monde </router-link> > </span> <span v-else> Monde </span>
-            <router-link v-if="hasParent" :to="parent.url"> {{ parent.name }} </router-link> <span v-if="hasParent"> > </span> 
-            {{ name }} 
+        <div class="flexbox">
+            <div> 
+                <span v-if="!isWorld"> <router-link to="/"> Monde </router-link> > </span> <span v-else> Monde </span>
+                <router-link v-if="hasParent" :to="parent.url"> {{ parent.name }} </router-link> <span v-if="hasParent"> > </span> 
+                {{ name }} 
+            </div>
+            <img src="images/logo.png" class=logo>
+            <div> 
+                <span v-if="loggedIn" @click="logout"> Logout </span>
+                <span v-else @click="showDialog"> Login </span>
+            </div>
+            <LoginDialog v-show="isLoggingIn"
+                        @close="cancel"
+                        @confirm="login"
+            />
         </div>
-        <div> 
-            <span v-if="loggedIn" @click="logout"> Logout </span>
-            <span v-else @click="showDialog"> Login </span>
-        </div>
-        <LoginDialog v-show="isLoggingIn"
-                    @close="cancel"
-                    @confirm="login"
-        />
     </div>
 </template>
 
@@ -73,13 +76,34 @@ export default {
 
 <style lang="scss">
 .navigation {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 50px;
+    background-color: rgb(48, 48, 48);
+    color: white;
+}
+
+.flexbox {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    height: calc(100% - 10px);
+    margin: 5px;
+}
+
+.navigation a {
+    color: white;
+    text-decoration: underline;
 }
 
 .navigation span {
     cursor: pointer;
+}
+
+.logo {
+    height: 80%;
 }
 </style>
