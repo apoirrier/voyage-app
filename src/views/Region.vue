@@ -1,6 +1,6 @@
 <template>
     <div>
-        <img v-if="!hasLoaded" src="images/teleport.jpg" style="height: 80%">
+        <img v-if="!hasLoaded" src="images/teleport.jpg" style="height: 80%; width: 100%">
         <div v-else class=region>
             <NavigationBar :name="name" @login-change="changeLogin"/>
             <ImageSlider :images="images" :altText="name" :isEditing="isEditing" :imageName="this.$route.params.region" @images-changed="updateImages" />

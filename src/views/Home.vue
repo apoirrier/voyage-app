@@ -1,8 +1,13 @@
 <template>
 <div class="home">
     <NavigationBar @login-change="changeLogin"/>
-    <button v-if="loggedIn" class="new_region" @click="newRegionClicked"> Nouvelle région </button>
-    <div id="mapContainer" class="basemap"></div>
+    <div id="mapContainer" class="basemap">
+        <div v-if="loggedIn" class="new_region" @click="newRegionClicked">
+            <svg viewBox="0 0 512 512">
+                <path d="M257,0C116.39,0,0,114.39,0,255s116.39,257,257,257s255-116.39,255-257S397.61,0,257,0z M392,285H287v107 c0,16.54-13.47,30-30,30c-16.54,0-30-13.46-30-30V285H120c-16.54,0-30-13.46-30-30c0-16.54,13.46-30,30-30h107V120 c0-16.54,13.46-30,30-30c16.53,0,30,13.46,30,30v105h105c16.53,0,30,13.46,30,30S408.53,285,392,285z" />
+            </svg>
+        </div>
+    </div>
 </div>
 </template>
 
@@ -23,6 +28,7 @@ export default {
             loggedIn: Parse.User.current() != undefined,
             mouseMarker: null,
             isAddingMarker: false,
+            markersAdded: false
         }
     },
     mounted() {
@@ -38,6 +44,13 @@ export default {
 
         this.map.on("load", this.addMarkers);
         this.map.on("click", this.clickOnMap);
+
+        // Capture escape key to cancel add
+        const self = this;
+        window.addEventListener('keyup', function(ev) {
+            if(ev.key == 'Escape')
+                self.pressEscape();
+        });
     },
     created() {
         this.loadData();
@@ -60,6 +73,7 @@ export default {
                 }
                 this.regions = answer.regions;
             });
+            this.addMarkers();
         },
         async createRegion(coordinates) {
             this.$prompt("Nouvelle région").then( (name) => {
@@ -84,8 +98,14 @@ export default {
                     return this.$router.push((this.$route.fullPath + "/world/" + id + "?edit=1").split("//").join("/"));
                 });
             });
+            this.pressEscape();
         },
         addMarkers() {
+            if(this.regions.length == 0)
+                return;
+            if(this.markersAdded)
+                return;
+            this.markersAdded = true;
             this.regions.forEach(region => {
                 const popup = new mapboxgl.Popup({maxWidth: '300px', className: 'popup'})
                     .setHTML("<a href='#/world/" + region.url + 
@@ -114,6 +134,10 @@ export default {
         newRegionClicked() {
             this.isAddingMarker = true;
             this.mouseMarker.addTo(this.map);
+        },
+        pressEscape() {
+            this.isAddingMarker = false;
+            this.mouseMarker.remove();
         }
     }
 }
@@ -126,16 +150,29 @@ export default {
 }
 
 .new_region {
-    width: fit-content;
-    margin: 10px;
-    align-self: center;
-    margin: 0;
+    cursor: pointer;
+    opacity: 0.6;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    z-index: 1;
+}
+
+.new_region:hover {
+    opacity: 1;
+}
+
+.new_region svg {
+    width: 40px;
+    fill: rgb(84, 165, 241);;
 }
 
 .basemap {
+  position: absolute;
   width: 100%;
-  height: calc(100vh - 70px);
-  margin-top: 10px;
+  height: calc(100vh - 50px);
+  bottom: 0;
+  left: 0;
 }
 
 .popup {
