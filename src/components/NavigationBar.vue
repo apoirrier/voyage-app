@@ -6,16 +6,18 @@
                 <router-link v-if="hasParent" :to="parent.url"> {{ parent.name }} </router-link> <span v-if="hasParent"> > </span> 
                 {{ name }} 
             </div>
-            <img src="images/logo.png" class=logo>
+            <div class=logo>
+                <img src="images/logo.png" style="height: 100%;">
+            </div>
             <div> 
                 <span v-if="loggedIn" @click="logout"> Logout </span>
                 <span v-else @click="showDialog"> Login </span>
             </div>
-            <LoginDialog v-show="isLoggingIn"
+        </div>
+        <LoginDialog v-show="isLoggingIn"
                         @close="cancel"
                         @confirm="login"
-            />
-        </div>
+        />
     </div>
 </template>
 
@@ -88,10 +90,22 @@ export default {
 .flexbox {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
     align-items: center;
     height: calc(100% - 10px);
     margin: 5px;
+}
+
+.flexbox div {
+    width: 33%;
+    margin: 10px;
+}
+
+.flexbox div:first-of-type {
+    text-align: left;
+}
+
+.flexbox div:last-of-type {
+    text-align: right;
 }
 
 .navigation a {
