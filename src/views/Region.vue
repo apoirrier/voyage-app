@@ -14,7 +14,7 @@
                 <div v-else />
             </div>
 
-            <p v-if="!isEditing" class="region_description"> {{ description}} </p>
+            <EditableMarkdown v-if="!isEditing" class="region_description" :inputData="this.description" />
             <textarea v-else class="pinput" v-model="description"/>
 
             <div class="region_flexbox">
@@ -62,7 +62,7 @@
                     </div>
                     <div v-else-if="this.selectedTab === null" class="region_general-tab"/>
                     <div v-else class="region_general-tab">
-                        <span v-if="!isEditing" v-html="generalTabs[selectedTab].text" style="align-self: flex-start;">  </span>
+                        <EditableMarkdown v-if="!isEditing" style="align-self: flex-start;" :inputData="generalTabs[selectedTab].text" />
                         <textarea v-else class="pinput" v-model="generalTabs[selectedTab].text"/>
                         <div v-for="(img, idx) in this.generalTabs[this.selectedTab].images" :key="img.url()" style="position: relative;">
                             <img :src="imageUrl(img)">
@@ -90,6 +90,7 @@
 import NavigationBar from '../components/NavigationBar.vue'
 import ImageSlider from '../components/ImageSlider.vue'
 import Carte from '../components/Carte.vue'
+import EditableMarkdown from '../components/EditableMarkdown.vue'
 import { mapState } from 'vuex'
 import Parse from 'parse'
 
@@ -99,6 +100,7 @@ export default {
         NavigationBar,
         ImageSlider,
         Carte,
+        EditableMarkdown
     },
     data() {
         return {

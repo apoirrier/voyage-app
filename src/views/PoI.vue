@@ -9,7 +9,7 @@
           <h1 v-if="!isEditing">{{ name }}</h1>
           <input v-else class="h1input" v-model="name">
           <Rating :score="currentRate" :type="type" />
-          <p v-if="!isEditing" class="description-content">{{ description }}</p>
+          <EditableMarkdown v-if="!isEditing" class="description-content" :inputData="description" />
           <textarea v-else class="pinput" v-model="description"/>
           <button v-if="isEditing" @click="addComment" style="margin: 20px;">
             Nouveau commentaire
@@ -46,6 +46,7 @@ import NavigationBar from "../components/NavigationBar.vue";
 import InfoDocker from "../components/InfoDocker.vue";
 import Comment from "../components/Comment.vue";
 import Rating from "../components/Rating.vue";
+import EditableMarkdown from "../components/EditableMarkdown.vue"
 import Parse from 'parse'
 
 export default {
@@ -55,7 +56,8 @@ export default {
     NavigationBar,
     InfoDocker,
     Comment,
-    Rating
+    Rating,
+    EditableMarkdown
   },
   data() {
     return {

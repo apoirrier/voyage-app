@@ -15,6 +15,7 @@
 import Parse from 'parse'
 import mapboxgl from "mapbox-gl";
 import NavigationBar from '../components/NavigationBar.vue'
+import mixin from "../mixins/mixin"
 
 export default {
     name: "Home",
@@ -58,6 +59,7 @@ export default {
     watch: {
         '$route': 'loadData'
     },
+    mixins: [mixin],
     methods: {
         changeLogin(newValue) {
             this.loggedIn = newValue;
@@ -110,7 +112,7 @@ export default {
                 const popup = new mapboxgl.Popup({maxWidth: '300px', offset: 25})
                     .setHTML("<a href='#/world/" + region.url + 
                              "'> <img src=" + this.imageUrl(region.image) + 
-                             "> <h1> " + region.name + " </h1> </a>");
+                             "> <h1> " + this.sanitize(region.name) + " </h1> </a>");
                 new mapboxgl.Marker().setLngLat(region.coordinates).setPopup(popup).addTo(this.map);
             });
             this.mouseMarker = new mapboxgl.Marker();

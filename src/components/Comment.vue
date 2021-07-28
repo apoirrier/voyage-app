@@ -10,7 +10,7 @@
                 </svg>
             </div>
         </div>
-        <p v-if="!isEditing" class=comment-content> {{ content }} </p>
+        <EditableMarkdown v-if="!isEditing" class=comment-content :inputData="content"/>
         <textarea v-else class="pinput" v-model="content" @change="onChange" />
         <div class=comment-bottom>
             <Rating class="comment-rating" :score="rate" :type="type" :editable="isEditing" @after-rate="rateChanged"/>
@@ -22,11 +22,13 @@
 
 <script>
 import Rating from './Rating.vue'
+import EditableMarkdown from './EditableMarkdown.vue'
 
 export default {
     name: "Comment",
     components: {
-        Rating
+        Rating,
+        EditableMarkdown
     },
     props: {
         title: {
