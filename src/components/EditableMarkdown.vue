@@ -1,8 +1,9 @@
 <template>
-    <p v-html="renderedHtml" />
+    <div v-html="renderedHtml" />
 </template>
 
 <script>
+import showdown from "showdown";
 
 export default {
     name: "EditableMarkdown",
@@ -11,7 +12,10 @@ export default {
     },
     computed: {
         renderedHtml() {
-            return this.inputData;
+            const converter = new showdown.Converter();
+            const unsafeData = converter.makeHtml(this.inputData);
+            console.log(unsafeData);
+            return this.$sanitize(unsafeData);
         }
     }
 }
