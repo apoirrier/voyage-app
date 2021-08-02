@@ -64,21 +64,29 @@
                     <div v-else class="region_general-tab">
                         <EditableMarkdown v-if="!isEditing" style="align-self: flex-start;" :inputData="generalTabs[selectedTab].text" />
                         <textarea v-else class="pinput" v-model="generalTabs[selectedTab].text"/>
-                        <div v-for="(img, idx) in this.generalTabs[this.selectedTab].images" :key="img.url()" style="position: relative;">
-                            <img :src="imageUrl(img)">
-                            <div v-if="isEditing" class="cross_close" style="right: 10px;" @click="removeImage(idx)">
-                                <svg viewBox="0 0 365.71733 365">
-                                    <path d="m356.339844 296.347656-286.613282-286.613281c-12.5-12.5-32.765624-12.5-45.246093 0l-15.105469 15.082031c-12.5 12.503906-12.5 32.769532 0 45.25l286.613281 286.613282c12.503907 12.5 32.769531 12.5 45.25 0l15.082031-15.082032c12.523438-12.480468 12.523438-32.75.019532-45.25zm0 0" />
-                                    <path d="m295.988281 9.734375-286.613281 286.613281c-12.5 12.5-12.5 32.769532 0 45.25l15.082031 15.082032c12.503907 12.5 32.769531 12.5 45.25 0l286.632813-286.59375c12.503906-12.5 12.503906-32.765626 0-45.246094l-15.082032-15.082032c-12.5-12.523437-32.765624-12.523437-45.269531-.023437zm0 0" />
-                                </svg>
-                            </div>
+                        <div v-if="isEditing">
+                            <hr>
+                            <span> Click on an image to copy its address: </span>
+                            <vue-horizontal responsive>
+                                <section v-for="(img, idx) in this.generalTabs[this.selectedTab].images" :key="img.url()" style="position: relative;">
+                                    <img :src="imageUrl(img)" class="imageSlider" @click="copy(img)" title="Copy to clipboard">
+                                    <div class="cross_close" style="right: 10px;" @click="removeImage(idx)">
+                                        <svg viewBox="0 0 365.71733 365">
+                                            <path d="m356.339844 296.347656-286.613282-286.613281c-12.5-12.5-32.765624-12.5-45.246093 0l-15.105469 15.082031c-12.5 12.503906-12.5 32.769532 0 45.25l286.613281 286.613282c12.503907 12.5 32.769531 12.5 45.25 0l15.082031-15.082032c12.523438-12.480468 12.523438-32.75.019532-45.25zm0 0" />
+                                            <path d="m295.988281 9.734375-286.613281 286.613281c-12.5 12.5-12.5 32.769532 0 45.25l15.082031 15.082032c12.503907 12.5 32.769531 12.5 45.25 0l286.632813-286.59375c12.503906-12.5 12.503906-32.765626 0-45.246094l-15.082032-15.082032c-12.5-12.523437-32.765624-12.523437-45.269531-.023437zm0 0" />
+                                        </svg>
+                                    </div>
+                                </section>
+                                <section style="display: flex; align-items: center; justify-content: center;">
+                                    <input type="file" id="tab_image" ref="tab_image" accept="image/*" class="hidden_input" @change="handleFileUpload" />
+                                    <label for="tab_image" class="fading-button">
+                                        <svg viewBox="0 0 512 512">
+                                            <path d="M257,0C116.39,0,0,114.39,0,255s116.39,257,257,257s255-116.39,255-257S397.61,0,257,0z M392,285H287v107 c0,16.54-13.47,30-30,30c-16.54,0-30-13.46-30-30V285H120c-16.54,0-30-13.46-30-30c0-16.54,13.46-30,30-30h107V120 c0-16.54,13.46-30,30-30c16.53,0,30,13.46,30,30v105h105c16.53,0,30,13.46,30,30S408.53,285,392,285z" />
+                                        </svg>
+                                    </label>
+                                </section>
+                            </vue-horizontal>
                         </div>
-                        <input type="file" id="tab_image" ref="tab_image" accept="image/*" class="hidden_input" @change="handleFileUpload" />
-                        <label v-if="isEditing" for="tab_image" class="file_button" style="position: relative; top:0; right:0;padding-top: 20px;"> 
-                            <svg viewBox="0 0 512 512">
-                                <path d="M257,0C116.39,0,0,114.39,0,255s116.39,257,257,257s255-116.39,255-257S397.61,0,257,0z M392,285H287v107 c0,16.54-13.47,30-30,30c-16.54,0-30-13.46-30-30V285H120c-16.54,0-30-13.46-30-30c0-16.54,13.46-30,30-30h107V120 c0-16.54,13.46-30,30-30c16.53,0,30,13.46,30,30v105h105c16.53,0,30,13.46,30,30S408.53,285,392,285z" />
-                            </svg>
-                        </label>
                     </div>
                 </div>
             </div>
@@ -93,6 +101,7 @@ import Carte from '../components/Carte.vue'
 import EditableMarkdown from '../components/EditableMarkdown.vue'
 import { mapState } from 'vuex'
 import Parse from 'parse'
+import VueHorizontal from 'vue-horizontal';
 
 export default {
     name: "Region",
@@ -100,7 +109,8 @@ export default {
         NavigationBar,
         ImageSlider,
         Carte,
-        EditableMarkdown
+        EditableMarkdown,
+        VueHorizontal
     },
     data() {
         return {
@@ -338,6 +348,17 @@ export default {
                     this.selectedTab = this.generalTabs.length - 1;
                 }
             });
+        },
+        copy(img) {
+            this.$copyText("![](" + img.url() + ")");
+            this.$fire({
+                text: "Copied to clipboard!",
+                timer: 1000,
+                showConfirmButton: false,
+                position: 'bottom-end',
+                backdrop: false,
+                width: '200px'
+            })
         }
     }
 }
@@ -476,6 +497,16 @@ export default {
     min-height: 200px;
     font-size: 1em;
     border-width: 0;
+}
+
+.imageSlider {
+    height: 200px;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.imageSlider:hover {
+    opacity:0.6;
 }
 
 </style>

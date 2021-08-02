@@ -12,20 +12,20 @@
         <img class="image-slider_image"
             :src="imageUrl"
             :alt="altText" >
-        <img class="right-arrow" src="images/right-red.png" alt="Next image" @click="incrementValue(1)">
-        <img class="left-arrow" src="images/left-red.png" alt="Previous image" @click="incrementValue(-1)">
+        <img class="fading-button right-arrow" src="images/right-red.png" alt="Next image" @click="incrementValue(1)">
+        <img class="fading-button left-arrow" src="images/left-red.png" alt="Previous image" @click="incrementValue(-1)">
         <input type="file" id="file" ref="file" accept="image/*" multiple class="hidden_input" @change="handleFileUpload" />
-        <label v-if="isEditing" for="file" class="file_button"> 
+        <label v-if="isEditing" for="file" class="fading-button file_button"> 
             <svg viewBox="0 0 512 512">
                 <path d="M257,0C116.39,0,0,114.39,0,255s116.39,257,257,257s255-116.39,255-257S397.61,0,257,0z M392,285H287v107 c0,16.54-13.47,30-30,30c-16.54,0-30-13.46-30-30V285H120c-16.54,0-30-13.46-30-30c0-16.54,13.46-30,30-30h107V120 c0-16.54,13.46-30,30-30c16.53,0,30,13.46,30,30v105h105c16.53,0,30,13.46,30,30S408.53,285,392,285z" />
             </svg>
         </label>
-        <div v-if="isEditing" class="remove_button" @click="removeImage">
+        <div v-if="isEditing" class="fading-button remove_button" @click="removeImage">
             <svg viewBox="0 0 512 512" transform="rotate(45)">
                 <path d="M257,0C116.39,0,0,114.39,0,255s116.39,257,257,257s255-116.39,255-257S397.61,0,257,0z M392,285H287v107 c0,16.54-13.47,30-30,30c-16.54,0-30-13.46-30-30V285H120c-16.54,0-30-13.46-30-30c0-16.54,13.46-30,30-30h107V120 c0-16.54,13.46-30,30-30c16.53,0,30,13.46,30,30v105h105c16.53,0,30,13.46,30,30S408.53,285,392,285z" />
             </svg>
         </div>
-        <div v-if="isEditing" class="front_button" @click="setFront">
+        <div v-if="isEditing" class="fading-button front_button" @click="setFront">
             <svg viewBox="0 0 405 405" :style="frontButtonStyle">
                 <path d="M202.531,0C90.676,0,0,90.678,0,202.535C0,314.393,90.676,405.07,202.531,405.07c111.859,0,202.539-90.678,202.539-202.535 C405.07,90.678,314.391,0,202.531,0z M243.192,312.198c0,8.284-6.716,15-15,15h-27.629c-8.284,0-15-6.716-15-15v-168.35 l-17.1,9.231c-4.069,2.197-8.924,2.393-13.155,0.536c-4.233-1.858-7.373-5.565-8.51-10.046l-5.459-21.518 c-1.695-6.683,1.383-13.66,7.461-16.913l47.626-25.491c2.177-1.166,4.608-1.775,7.078-1.775h24.688c8.284,0,15,6.716,15,15V312.198 z" />
             </svg>
@@ -148,22 +148,25 @@ export default {
   float: center;
 }
 
+.fading-button {
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.fading-button:hover {
+    opacity: 1;
+}
+
+.fading-button svg {
+    width: 40px;
+    fill: rgb(177, 177, 177);
+}
+
 .right-arrow {
     max-width: 50px;
     position: absolute;
     top: 195px;
     left: calc(100vw - 60px);
-    cursor: pointer;
-    opacity: 0.8;
-}
-
-.right-arrow:hover {
-    max-width: 50px;
-    position: absolute;
-    top: 195px;
-    left: calc(100vw - 60px);
-    cursor: pointer;
-    opacity: 1;
 }
 
 .left-arrow {
@@ -171,17 +174,6 @@ export default {
     position: absolute;
     top: 195px;
     left: 0;
-    cursor: pointer;
-    opacity: 0.8;
-}
-
-.left-arrow:hover {
-    max-width: 50px;
-    position: absolute;
-    top: 195px;
-    left: 0;
-    cursor: pointer;
-    opacity: 1;
 }
 
 .hidden_input {
@@ -194,54 +186,21 @@ export default {
 }
 
 .file_button {
-    cursor: pointer;
-    opacity: 0.6;
     position: absolute;
     right: 60px;
     top: 75px;
 }
 
-.file_button:hover {
-    opacity: 1;
-}
-
-.file_button svg {
-    width: 40px;
-    fill: rgb(177, 177, 177);
-}
-
 .remove_button {
-    cursor: pointer;
-    opacity: 0.6;
     position: absolute;
     right: 10px;
     top: 75px;
 }
 
-.remove_button:hover {
-    opacity: 1;
-}
-
-.remove_button svg {
-    width: 40px;
-    fill: rgb(177, 177, 177);
-}
-
 .front_button {
-    cursor: pointer;
-    opacity: 0.6;
     position: absolute;
     right: 110px;
     top: 75px;
-}
-
-.front_button:hover {
-    opacity: 1;
-}
-
-.front_button svg {
-    width: 40px;
-    fill: rgb(177, 177, 177);
 }
 
 .image_loader {
