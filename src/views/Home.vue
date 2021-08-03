@@ -32,7 +32,7 @@ export default {
         }
     },
     mounted() {
-        mapboxgl.accessToken = "pk.eyJ1IjoiYXBvaXJyaWVyIiwiYSI6ImNrZWc2NDRzbDB3dTEycm95M3E2bzJnOXIifQ.K5jGE4KPX3QQdKZ32sB1hw";
+        mapboxgl.accessToken = process.env.VUE_APP_MAPBOX_TOKEN;
         this.map = new mapboxgl.Map({
             container: "mapContainer",
             style: "mapbox://styles/mapbox/outdoors-v11",

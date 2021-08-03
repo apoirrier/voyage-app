@@ -48,7 +48,7 @@ Vue.use(VueSanitize, defaultSanitizeOptions);
 Vue.use(VueHorizontal);
 Vue.use(VueClipboard);
 
-Parse.initialize("2PH1n445TRPy4YjynvkmfKqlTkEnb9dNl1MTvbpt","vFZmdYwnHSxS1H5emXeAKu18ilN55ZHbYGkRxwgM");
+Parse.initialize(process.env.VUE_APP_PARSE_APP_ID, process.env.VUE_APP_PARSE_JS_KEY);
 Parse.serverURL = 'https://parseapi.back4app.com/'
 
 new Vue({
