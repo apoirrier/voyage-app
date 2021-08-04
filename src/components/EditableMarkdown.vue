@@ -14,7 +14,6 @@ export default {
         renderedHtml() {
             const converter = new showdown.Converter();
             const unsafeData = converter.makeHtml(this.inputData);
-            console.log(unsafeData);
             return this.$sanitize(unsafeData);
         }
     }

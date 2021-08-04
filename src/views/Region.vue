@@ -66,7 +66,7 @@
                         <textarea v-else class="pinput" v-model="generalTabs[selectedTab].text"/>
                         <div v-if="isEditing">
                             <hr>
-                            <span> Click on an image to copy its address: </span>
+                            <span> Clique sur une image pour copier son adresse : </span>
                             <vue-horizontal responsive>
                                 <section v-for="(img, idx) in this.generalTabs[this.selectedTab].images" :key="img.url()" style="position: relative;">
                                     <img :src="imageUrl(img)" class="imageSlider" @click="copy(img)" title="Copy to clipboard">
@@ -199,15 +199,15 @@ export default {
             }
             Parse.Cloud.run("updateRegion", params).then( ( answer ) => {
                 if(answer === undefined || answer.code >= 500) {
-                    this.$alert("Error while trying to contact server... Please try again or contact an admin");
+                    this.$alert("Impossible de se connecter à Parse... Veuillez réessayer ou contacter un administrateur.");
                     return;
                 } else if(answer.code === 403) {
-                    this.$alert("User unauthorized, please log in");
+                    this.$alert("Veuillez vous connecter");
                     return;
                 } else if(answer.code === 404)
                     return this.$router.push('/404');
                 else if(answer.code !== 200) {
-                    this.$alert("Unknown error: code " + answer.code);
+                    this.$alert("Erreur inconnue: code " + answer.code);
                     return;
                 }
             });
@@ -227,15 +227,15 @@ export default {
                             type: this.selectedTab
                         }).then( ( answer ) => {
                         if(answer === undefined || answer.code >= 500) {
-                            this.creationError = ("Error while trying to contact server... Please try again or contact an admin");
+                            this.creationError = ("Impossible de se connecter à Parse... Veuillez réessayer ou contacter un administrateur.");
                             return;
                         } else if(answer.code === 403) {
-                            this.creationError = ("User unauthorized, please log in");
+                            this.creationError = ("Veuillez vous connecter");
                             return;
                         } else if(answer.code === 404)
                             return this.$router.push('/404');
                         else if(answer.code !== 200) {
-                            this.creationError = ("Unknown error: code " + answer.code);
+                            this.creationError = ("Erreur inconnue: code " + answer.code);
                             return;
                         }
                         this.isCreatingPoi = false;
@@ -253,15 +253,15 @@ export default {
 
                 Parse.Cloud.run("deletePoi", params).then((answer) => {
                     if(answer === undefined || answer.code >= 500) {
-                        this.$alert("Error while trying to contact server... Please try again or contact an admin");
+                        this.$alert("Impossible de se connecter à Parse... Veuillez réessayer ou contacter un administrateur.");
                         return;
                     } else if(answer.code === 403) {
-                        this.$alert("User unauthorized, please log in");
+                        this.$alert("Veuillez vous connecter");
                         return;
                     } else if(answer.code === 404)
                         return this.$router.push('/404');
                     else if(answer.code !== 200) {
-                        this.$alert("Unknown error: code " + answer.code);
+                        this.$alert("Erreur inconnue: code " + answer.code);
                         return;
                     }
                     this.poiTabs[this.selectedTab].splice(index, 1);
@@ -271,15 +271,15 @@ export default {
         async loadData() {
             Parse.Cloud.run("getRegion", {region: this.$route.params.region}).then( ( answer ) => {
                 if(answer === undefined || answer.code >= 500) {
-                    this.$alert("Error while trying to contact server... Please try again or contact an admin");
+                    this.$alert("Impossible de se connecter à Parse... Veuillez réessayer ou contacter un administrateur.");
                     return;
                 } else if(answer.code === 403) {
-                    this.$alert("User unauthorized, please log in");
+                    this.$alert("Veuillez vous connecter");
                     return;
                 } else if(answer.code === 404)
                     return this.$router.push('/404');
                 else if(answer.code !== 200) {
-                    this.$alert("Unknown error: code " + answer.code);
+                    this.$alert("Erreur inconnue: code " + answer.code);
                     return;
                 }
                                     
@@ -352,7 +352,7 @@ export default {
         copy(img) {
             this.$copyText("![](" + img.url() + ")");
             this.$fire({
-                text: "Copied to clipboard!",
+                text: "Copié dans le presse-papier!",
                 timer: 1000,
                 showConfirmButton: false,
                 position: 'bottom-end',

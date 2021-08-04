@@ -32,7 +32,7 @@
             </div>
             <div class="swal2-actions">
                 <button type="button" class="swal2-confirm swal2-styled" style="display: inline-block; border-left-color: rgb(48, 133, 214); border-right-color: rgb(48, 133, 214);" @click="confirm">OK</button>
-                <button type="button" class="swal2-cancel swal2-styled" style="display: inline-block;" @click="close">Cancel</button>
+                <button type="button" class="swal2-cancel swal2-styled" style="display: inline-block;" @click="close">Annuler</button>
             </div>
         </div>
     </div>

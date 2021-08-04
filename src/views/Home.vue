@@ -65,10 +65,10 @@ export default {
         loadData() {
             Parse.Cloud.run("listRegion").then( (answer) => {
                 if(answer === undefined || answer.code >= 500) {
-                    this.$alert("Error while trying to contact server... Please try again or contact an admin");
+                    this.$alert("Impossible de se connecter à Parse... Veuillez réessayer ou contacter un administrateur.");
                     return;
                 } else if(answer.code !== 200) {
-                    this.$alert("Unknown error: code " + answer.code);
+                    this.$alert("Erreur inconnue: code " + answer.code);
                     return;
                 }
                 this.regions = answer.regions;
@@ -81,17 +81,17 @@ export default {
                     return;
                 Parse.Cloud.run("createRegion", {name: name, coordinates: coordinates}).then( (answer) => {
                     if(answer === undefined || answer.code >= 500) {
-                        this.$alert("Error while trying to contact server... Please try again or contact an admin");
+                        this.$alert("Impossible de se connecter à Parse... Veuillez réessayer ou contacter un administrateur.");
                         return;
                     } else if(answer.code === 403) {
-                        this.$alert("User unauthorized, please log in");
+                        this.$alert("Veuillez vous connecter");
                         return;
                     } else if(answer.code === 400) {
-                        this.$alert("Error creating region: " + answer.error);
+                        this.$alert("Impossible de créer une région: " + answer.error);
                         return;
                     }
                     else if(answer.code !== 200) {
-                        this.$alert("Unknown error: code " + answer.code);
+                        this.$alert("Erreur inconnue: code " + answer.code);
                         return;
                     }
                     const id = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(' ').join('-').toLowerCase();

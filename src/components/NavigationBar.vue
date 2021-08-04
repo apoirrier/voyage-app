@@ -49,21 +49,21 @@ export default {
     methods: {
         async logout() {
             Parse.User.logOut().then( () => {
-                this.$alert("Logged out successfully");
+                this.$alert("Vous êtes déconnecté");
                 this.loggedIn = false;
                 this.$emit("login-change", this.loggedIn);
             }, err => {
-                this.$alert('Error signing out', err);
+                this.$alert('Erreur lors de la déconnexion : ', err);
             });
         },
         async login(loginInfo) {
             Parse.User.logIn(loginInfo.username, loginInfo.password).then(() => {
                 this.isLoggingIn = false;
-                this.$alert('Logged in successfully');
+                this.$alert('Connecté !');
                 this.loggedIn = true;
                 this.$emit("login-change", this.loggedIn);
             }).catch( (error) => {
-                this.$alert("Error signing in: " + error.message);
+                this.$alert("Erreur lors de la connexion : " + error.message);
             });
         }, 
         cancel() {

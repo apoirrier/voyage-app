@@ -117,15 +117,15 @@ export default {
     async loadData() {
       Parse.Cloud.run("getPoi", {region: this.$route.params.region, poi: this.$route.params.poi}).then( ( answer ) => {
         if(answer === undefined || answer.code >= 500) {
-            this.$alert("Error while trying to contact server... Please try again or contact an admin");
+            this.$alert("Impossible de se connecter à Parse... Veuillez réessayer ou contacter un administrateur.");
             return;
         } else if(answer.code === 403) {
-            this.$alert("User unauthorized, please log in");
+            this.$alert("Veuillez vous connecter");
             return;
         } else if(answer.code === 404)
             return this.$router.push('/404');
         else if(answer.code !== 200) {
-            this.$alert("Unknown error: code " + answer.code);
+            this.$alert("Erreur inconnue: code " + answer.code);
             return;
         }
         const data = answer.poi;
@@ -168,15 +168,15 @@ export default {
       }
       Parse.Cloud.run("updatePoi", params).then( ( answer ) => {
         if(answer === undefined || answer.code >= 500) {
-            this.$alert("Error while trying to contact server... Please try again or contact an admin");
+            this.$alert("Impossible de se connecter à Parse... Veuillez réessayer ou contacter un administrateur.");
             return;
         } else if(answer.code === 403) {
-            this.$alert("User unauthorized, please log in");
+            this.$alert("Veuillez vous connecter");
             return;
         } else if(answer.code === 404)
             return this.$router.push('/404');
         else if(answer.code !== 200) {
-            this.$alert("Unknown error: code " + answer.code);
+            this.$alert("Erreur inconnue: code " + answer.code);
             return;
         }
       });
