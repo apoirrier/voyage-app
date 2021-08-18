@@ -1,5 +1,5 @@
 <template>
-    <div v-html="renderedHtml" />
+    <div v-html="renderedHtml" class="editable-markdown"/>
 </template>
 
 <script>
@@ -19,3 +19,9 @@ export default {
     }
 }
 </script>
+
+<style lang="scss">
+.editable-markdown a {
+    color: blue;
+}
+</style>

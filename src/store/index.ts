@@ -9,7 +9,7 @@ export default new Vuex.Store({
       'restaurant': '#bb3131',
       'hotel': '#1167b1',
       'activity': '#00561b',
-      'general': '#fedc56'
+      'general': '#ffa500'
     },
     categoryNames: {
       'restaurant': 'Restaurants',
