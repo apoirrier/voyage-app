@@ -291,15 +291,21 @@ export default {
                 if(this.generalTabs.length > 0)
                     this.selectedTab = 0;
                 if('hotels' in data) {
-                    this.poiTabs.hotel = data.hotels;
+                    this.poiTabs.hotel = data.hotels.sort(function (a, b) {
+                        return b.rate - a.rate;
+                    });
                     this.selectedTab = "hotel";
                 }
                 if('restaurants' in data) {
-                    this.poiTabs.restaurant = data.restaurants;
+                    this.poiTabs.restaurant = data.restaurants.sort(function (a, b) {
+                        return b.rate - a.rate;
+                    });
                     this.selectedTab = "restaurant";
                 }
                 if('activities' in data) {
-                    this.poiTabs.activity = data.activities;
+                    this.poiTabs.activity = data.activities.sort(function (a, b) {
+                        return b.rate - a.rate;
+                    });
                     this.selectedTab = "activity";
                 }
                 if(this.$route.query.edit == 1)
