@@ -219,7 +219,7 @@ export default {
                     this.creationError = "Un nom doit être fourni";
                 else {
                     this.creationError = "";
-                    const id = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(' ').join('-').toLowerCase();
+                    const id = name.replace(/[^\w\- ]/g, '').toLowerCase().replace(/ /g, "-");
                     Parse.Cloud.run("createPoi", {
                             region: this.$route.params.region,
                             poi: id,
