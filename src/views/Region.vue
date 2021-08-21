@@ -39,7 +39,7 @@
                 </div>
                 <div class="region_tab-content" :style="tabStyle(selectedTab)">
                     <div v-if="isPoiTab" class="region_tab-content-flex">
-                        <div v-for="(poi, idx) in poiTabs[selectedTab]" :key="poi.name" style="position: relative;">
+                        <div v-for="(poi, idx) in currentPoiTab" :key="poi.name" style="position: relative;">
                             <Carte :nextUrl="nextUrl(poi.nextUrl)"
                                 :address="poi.address"
                                 :image="imageUrl(poi.image)"
@@ -160,6 +160,16 @@ export default {
                 return "Nouvelle activité";
             return "";
         },
+        currentPoiTab() {
+            return this.poiTabs[this.selectedTab].sort(function (a, b) {
+                        if(a.rate === undefined)
+                            return 1;
+                        if(b.rate === undefined)
+                            return -1;
+                        return b.rate - a.rate;
+                    });
+        }
+
     },
     methods: {
         tabStyle(id) {
@@ -239,7 +249,19 @@ export default {
                             return;
                         }
                         this.isCreatingPoi = false;
-                        return this.$router.push(("/world/" + this.$route.params.region + "/" + id + "?edit=1").split("//").join("/"));
+                        return this.$confirm("Editer la nouvelle page ?").then( (isOk) => {
+                            if(isOk) {
+                                this.finishEdit().then(() => {
+                                    return this.$router.push(("/world/" + this.$route.params.region + "/" + id + "?edit=1").split("//").join("/"));
+                                });
+                            }
+                        }).catch(() => {
+                            this.poiTabs[this.selectedTab].push({
+                                address: "",
+                                name: name,
+                                nextUrl: id
+                            });
+                        });
                     });   
                 }
             });
@@ -291,21 +313,15 @@ export default {
                 if(this.generalTabs.length > 0)
                     this.selectedTab = 0;
                 if('hotels' in data) {
-                    this.poiTabs.hotel = data.hotels.sort(function (a, b) {
-                        return b.rate - a.rate;
-                    });
+                    this.poiTabs.hotel = data.hotels;
                     this.selectedTab = "hotel";
                 }
                 if('restaurants' in data) {
-                    this.poiTabs.restaurant = data.restaurants.sort(function (a, b) {
-                        return b.rate - a.rate;
-                    });
+                    this.poiTabs.restaurant = data.restaurants;
                     this.selectedTab = "restaurant";
                 }
                 if('activities' in data) {
-                    this.poiTabs.activity = data.activities.sort(function (a, b) {
-                        return b.rate - a.rate;
-                    });
+                    this.poiTabs.activity = data.activities;
                     this.selectedTab = "activity";
                 }
                 if(this.$route.query.edit == 1)
