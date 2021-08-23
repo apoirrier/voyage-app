@@ -2,8 +2,8 @@
     <div class=navigation>
         <div class="flexbox">
             <div> 
-                <span v-if="!isWorld"> <router-link to="/"> Monde </router-link> > </span> <span v-else> Monde </span>
-                <router-link v-if="hasParent" :to="parent.url"> {{ parent.name }} </router-link> <span v-if="hasParent"> > </span> 
+                <span v-if="!isWorld"> <router-link to="/">Monde</router-link> > </span> <span v-else>Monde</span>
+                <router-link v-if="hasParent" :to="parent.url">{{ parent.name }}</router-link> <span v-if="hasParent"> > </span> 
                 {{ name }} 
             </div>
             <div class=logo>
