@@ -14,8 +14,8 @@
         <textarea v-else class="pinput" v-model="content" @change="onChange" />
         <div class=comment-bottom>
             <Rating class="comment-rating" :score="rate" :type="type" :editable="isEditing" @after-rate="rateChanged"/>
-            <div v-if="!isEditing"> {{ date }} </div>
-            <input type="date" v-else v-model="date" @change="onChange">
+            <div v-if="!isEditing" class=date> {{ date }} </div>
+            <input type="date" v-else v-model="date" @change="onChange" class=date>
         </div>
     </div>
 </template>
@@ -117,16 +117,11 @@ export default {
     height: 30px;
     line-height: 30px;
     font-size: 1em;
-    text-align: right;
-    border-right: 20px;
-    padding-right: 20px;
-    display: flex;
-    justify-content: space-between;
-    padding-left: 30px;
 }
 
 .comment-rating {
-    transform:scale(0.75) translate(-50px,-4px);
+    position: absolute;
+    transform:scale(0.75) translate(-40px,-4px);
 }
 
 .cross_close_comment {
@@ -138,6 +133,11 @@ export default {
 .cross_close_comment svg {
     width: 15px;
     height: 15px;
+}
+
+.date {
+    float: right;
+    margin-right: 10px;
 }
 
 </style>
