@@ -7,7 +7,7 @@
                 {{ name }} 
             </div>
             <div class=logo>
-                <img src="images/logo.png" style="height: 100%;">
+                <img src="images/logo.png">
             </div>
             <div> 
                 <span v-if="loggedIn" @click="logout"> Logout </span>
@@ -97,7 +97,8 @@ export default {
 
 .flexbox div {
     width: 33%;
-    margin: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .flexbox div:first-of-type {
@@ -119,5 +120,18 @@ export default {
 
 .logo {
     height: 80%;
+    position: relative;
 }
+
+.logo img {
+    position: absolute;
+    max-height: 100%;
+    max-width: 100%;
+    height: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
 </style>
