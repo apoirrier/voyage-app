@@ -90,7 +90,6 @@ export default {
     text-align: left;
     border: 1px solid;
     margin-bottom: 20px;
-    min-width: 350px;
 }
 
 .comment-title {

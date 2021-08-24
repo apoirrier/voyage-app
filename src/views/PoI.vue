@@ -4,6 +4,11 @@
     <div v-else class="poi">
       <NavigationBar :name="name" :parent="parent" @login-change="changeLogin"/>
       <ImageSlider :images="images" :altText="name" :isEditing="isEditing" :imageName="this.$route.params.poi" @images-changed="updateImages" />
+      <div style="text-align: right;">
+        <img v-if="isEditing" src="images/edit_active.png" class="edit_button edit_button_active" @click="finishEdit">
+        <img v-else-if="!isEditing && loggedIn" src="images/edit.png" class="edit_button" @click="beginEdit">
+        <div v-else />
+      </div>
       <div class="content"> 
           <div class="main-content">
           <h1 v-if="!isEditing">{{ name }}</h1>
@@ -28,9 +33,6 @@
           />
           </div>
           <div class="right-panel">
-            <img v-if="isEditing" src="images/edit_active.png" class="edit_button edit_button_active" @click="finishEdit">
-            <img v-else-if="!isEditing && loggedIn" src="images/edit.png" class="edit_button" @click="beginEdit">
-            <div v-else />
             <InfoDocker :website="website" :address="address" :phone="phone" :mail="mail" 
                       :type="type" :iframeUrl="iframeUrl" :isEditing="isEditing" 
                       @hasChanged="updateInfos" />
@@ -222,13 +224,25 @@ export default {
 
 .content {
   display: flex;
+  flex-direction: column;
   justify-content: space-around;
+}
+
+@media screen and (min-width: 800px) {
+  .content {
+    flex-direction: row;
+  }
 }
 
 .main-content {
   display: flex;
   flex-direction: column;
-  max-width: 60%;
+}
+
+@media screen and (min-width: 800px) {
+  .main-content {
+    max-width: 60%;
+  }
 }
 
 .main-content textarea {
@@ -247,8 +261,13 @@ export default {
 .right-panel {
   display: flex;
   flex-direction: column;
-  width: 35%;
   align-items: flex-end;
+}
+
+@media screen and (min-width: 800px) {
+  .right-panel {
+    width: 35%;
+  }
 }
 
 </style>
