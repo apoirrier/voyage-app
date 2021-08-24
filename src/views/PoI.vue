@@ -247,7 +247,6 @@ export default {
 
 .main-content textarea {
   margin: 20px; 
-  min-width: 400px; 
   min-height: 100px;
 }
 
