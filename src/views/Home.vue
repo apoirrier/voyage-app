@@ -51,6 +51,8 @@ export default {
             if(ev.key == 'Escape')
                 self.pressEscape();
         });
+        if(localStorage.lastTab)
+            localStorage.removeItem("lastTab");
     },
     created() {
         this.loadData();
