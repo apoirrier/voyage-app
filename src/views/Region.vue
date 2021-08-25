@@ -180,7 +180,10 @@ export default {
             return "color: black; background-color: " + this.colors["general"]
         },
         changeTab(id) {
-            this.selectedTab = id
+            this.selectedTab = id;
+            let lastTab = localStorage.lastTab ? JSON.parse(localStorage.lastTab) : {};
+            lastTab[this.$route.params.region] = id;
+            localStorage.lastTab = JSON.stringify(lastTab);
         },
         nextUrl(url) {
             return (this.$route.fullPath + "/" + url).split("//").join("/");
@@ -326,6 +329,8 @@ export default {
                 }
                 if(this.$route.query.edit == 1)
                     this.isEditing = true;
+                if(localStorage.lastTab && Object.keys(JSON.parse(localStorage.lastTab)).includes(this.$route.params.region))
+                    this.selectedTab = JSON.parse(localStorage.lastTab)[this.$route.params.region];
                 this.hasLoaded = true;
             });
         },
