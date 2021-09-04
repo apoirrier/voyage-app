@@ -42,7 +42,7 @@
                         <div v-for="(poi, idx) in currentPoiTab" :key="poi.name" style="position: relative;">
                             <Carte :nextUrl="nextUrl(poi.nextUrl)"
                                 :address="poi.address"
-                                :image="imageUrl(poi.image)"
+                                :image="getImageUrl(poi.image)"
                                 :rate="poi.rate"
                                 :name="poi.name"
                                 :type="selectedTab" />
@@ -68,8 +68,8 @@
                             <hr>
                             <span> Clique sur une image pour copier son adresse : </span>
                             <vue-horizontal responsive>
-                                <section v-for="(img, idx) in this.generalTabs[this.selectedTab].images" :key="img.url()" style="position: relative;">
-                                    <img :src="imageUrl(img)" class="imageSlider" @click="copy(img)" title="Copy to clipboard">
+                                <section v-for="(img, idx) in this.generalTabs[this.selectedTab].images" :key="getImageUrl(img)" style="position: relative;">
+                                    <img :src="getImageUrl(img)" class="imageSlider" @click="copy(img)" title="Copy to clipboard">
                                     <div class="cross_close" style="right: 10px;" @click="removeImage(idx)">
                                         <svg viewBox="0 0 365.71733 365">
                                             <path d="m356.339844 296.347656-286.613282-286.613281c-12.5-12.5-32.765624-12.5-45.246093 0l-15.105469 15.082031c-12.5 12.503906-12.5 32.769532 0 45.25l286.613281 286.613282c12.503907 12.5 32.769531 12.5 45.25 0l15.082031-15.082032c12.523438-12.480468 12.523438-32.75.019532-45.25zm0 0" />
@@ -102,9 +102,11 @@ import EditableMarkdown from '../components/EditableMarkdown.vue'
 import { mapState } from 'vuex'
 import Parse from 'parse'
 import VueHorizontal from 'vue-horizontal';
+import mixin from "../mixins/imgur.ts"
 
 export default {
     name: "Region",
+    mixins: [mixin],
     components: {
         NavigationBar,
         ImageSlider,
@@ -190,11 +192,6 @@ export default {
         },
         getCategoryName(type) {
             return this.categoryNames[type]
-        },
-        imageUrl(image) {
-            if(image === undefined)
-                return "images/undefined"
-            return image.url();
         },
         beginEdit() {
             this.isEditing = true;
@@ -351,13 +348,8 @@ export default {
         },
         async handleFileUpload() {
             if(this.$refs.tab_image.files.length > 0 && this.$refs.tab_image.files[0] !== undefined) {
-                const fullname = this.$refs.tab_image.files[0].name.split(".");
-                const extension = "." + fullname[fullname.length - 1];
-                const fileToSave = new Parse.File('tab_' + this.generalTabs[this.selectedTab].title + extension, this.$refs.tab_image.files[0]);
-                fileToSave.save().then(() => {
-                    this.generalTabs[this.selectedTab].images.push(fileToSave);
-                }).catch( (error) => {
-                    this.$alert(error);
+                this.upload(this.$refs.tab_image.files[0]).then((img_url) => {
+                    this.generalTabs[this.selectedTab].images.push(img_url);
                 });
             }
         },
@@ -377,7 +369,7 @@ export default {
             });
         },
         copy(img) {
-            this.$copyText("![](" + img.url() + ")");
+            this.$copyText("![](" + this.getImageUrl(img) + ")");
             this.$fire({
                 text: "Copié dans le presse-papier!",
                 timer: 1000,

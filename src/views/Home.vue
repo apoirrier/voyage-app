@@ -15,12 +15,14 @@
 import Parse from 'parse'
 import mapboxgl from "mapbox-gl";
 import NavigationBar from '../components/NavigationBar.vue'
+import mixin from "../mixins/imgur.ts"
 
 export default {
     name: "Home",
     components: {
         NavigationBar
     },
+    mixins: [mixin],
     data() {
         return {
             regions: [],
@@ -111,7 +113,7 @@ export default {
             this.regions.forEach(region => {
                 const popup = new mapboxgl.Popup({maxWidth: '300px', offset: 25})
                     .setHTML("<a href='#/world/" + region.url + 
-                             "'> <img src=" + this.imageUrl(region.image) + 
+                             "'> <img src=" + this.getImageUrl(region.image) + 
                              "> <h1> " + this.escapeHTML(region.name) + " </h1> </a>");
                 new mapboxgl.Marker().setLngLat(region.coordinates).setPopup(popup).addTo(this.map);
             });
@@ -133,11 +135,6 @@ export default {
             };
             const reg = /[&<>"'/]/ig;
             return input.replace(reg, (match)=>(map[match]));
-        },
-        imageUrl(image) {
-            if(image === undefined)
-                return "images/undefined"
-            return image.url();
         },
         async clickOnMap(e) {
             if(this.isAddingMarker) {

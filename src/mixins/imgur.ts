@@ -14,6 +14,13 @@ export default {
                         }).then((answer: any) => {
                             return answer.data.data.link;
                         })
+        },
+        getImageUrl(image: any) {
+            if(image === undefined)
+                return "images/undefined";
+            if(typeof image.url === 'function')
+                return image.url();
+            return image;
         }
     }
 }

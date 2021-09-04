@@ -35,7 +35,6 @@
 </template>
 
 <script>
-import Parse from 'parse';
 import mixin from '../mixins/imgur.ts'
 
 export default {
@@ -68,11 +67,7 @@ export default {
     },
     computed: {
         imageUrl() {
-            if(this.images[this.currentImage] === undefined)
-                return "images/undefined";
-            if(typeof this.images[this.currentImage].url === 'function')
-                return this.images[this.currentImage].url();
-            return this.images[this.currentImage];
+            return this.getImageUrl(this.images[this.currentImage]);
         },
         frontButtonStyle() {
             if(this.currentImage == 0)
