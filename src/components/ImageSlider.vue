@@ -36,9 +36,11 @@
 
 <script>
 import Parse from 'parse';
+import mixin from '../mixins/imgur.ts'
 
 export default {
     name: "ImageSlider",
+    mixins: [mixin],
     data() {
         return {
             currentImage: 0,
@@ -67,8 +69,10 @@ export default {
     computed: {
         imageUrl() {
             if(this.images[this.currentImage] === undefined)
-                return "images/undefined"
-            return this.images[this.currentImage].url();
+                return "images/undefined";
+            if(typeof this.images[this.currentImage].url === 'function')
+                return this.images[this.currentImage].url();
+            return this.images[this.currentImage];
         },
         frontButtonStyle() {
             if(this.currentImage == 0)
@@ -89,15 +93,9 @@ export default {
         async handleFileUpload() {
             if(this.$refs.file.files.length > 0) {
                 this.isLoading = true;
-                const promises = Array.from(this.$refs.file.files).map( (file) => {
-                    const fullname = file.name.split(".");
-                    const extension = "." + fullname[fullname.length - 1];
-                    const fileToSave = new Parse.File(this.imageName + extension, file);
-                    return fileToSave.save().then(() => {
-                        this.images.push(fileToSave);
-                    });
-                });
-                Promise.all(promises).then(() => {
+                const promises = Array.from(this.$refs.file.files).map(this.upload);
+                Promise.all(promises).then((new_images) => {
+                    this.images.push(...new_images);
                     this.$emit("images-changed", this.images);
                     this.currentImage = this.images.length - 1;
                     this.isLoading = false;

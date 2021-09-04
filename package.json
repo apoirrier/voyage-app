@@ -11,6 +11,7 @@
         "@mapbox/mapbox-gl-language": "^0.10.1",
         "@types/mapbox-gl": "^2.3.3",
         "@types/parse": "^2.18.8",
+        "axios": "^0.21.3",
         "core-js": "^3.16.0",
         "mapbox-gl": "^1.13.0",
         "npm": "^7.20.3",
