@@ -1,42 +1,77 @@
 <template>
   <div>
-    <img v-if="!hasLoaded" src="images/teleport.jpg" style="height: 80%; width: 100%">
+    <img
+      v-if="!hasLoaded"
+      src="images/teleport.jpg"
+      style="height: 80%; width: 100%"
+    />
     <div v-else class="poi">
-      <NavigationBar :name="name" :parent="parent" @login-change="changeLogin"/>
-      <ImageSlider :images="images" :altText="name" :isEditing="isEditing" :imageName="this.$route.params.poi" @images-changed="updateImages" />
-      <div style="text-align: right;">
-        <img v-if="isEditing" src="images/edit_active.png" class="edit_button edit_button_active" @click="finishEdit">
-        <img v-else-if="!isEditing && loggedIn" src="images/edit.png" class="edit_button" @click="beginEdit">
+      <NavigationBar
+        :name="name"
+        :parent="parent"
+        @login-change="changeLogin"
+      />
+      <ImageSlider
+        :images="images"
+        :altText="name"
+        :isEditing="isEditing"
+        :imageName="this.$route.params.poi"
+        @images-changed="updateImages"
+      />
+      <div style="text-align: right">
+        <img
+          v-if="isEditing"
+          src="images/edit_active.png"
+          class="edit_button edit_button_active"
+          @click="finishEdit"
+        />
+        <img
+          v-else-if="!isEditing && loggedIn"
+          src="images/edit.png"
+          class="edit_button"
+          @click="beginEdit"
+        />
         <div v-else />
       </div>
-      <div class="content"> 
-          <div class="main-content">
+      <div class="content">
+        <div class="main-content">
           <h1 v-if="!isEditing">{{ name }}</h1>
-          <input v-else class="h1input" v-model="name">
+          <input v-else class="h1input" v-model="name" />
           <Rating :score="currentRate" :type="type" />
-          <EditableMarkdown v-if="!isEditing" class="description-content" :inputData="description" />
-          <textarea v-else class="pinput" v-model="description"/>
-          <button v-if="isEditing" @click="addComment" style="margin: 20px;">
+          <EditableMarkdown
+            v-if="!isEditing"
+            class="description-content"
+            :inputData="description"
+          />
+          <textarea v-else class="pinput" v-model="description" />
+          <button v-if="isEditing" @click="addComment" style="margin: 20px">
             Nouveau commentaire
           </button>
           <Comment
-              v-for="(comment, idx) in comments"
-              :title="comment.title"
-              :content="comment.content"
-              :date="comment.date"
-              :rate="comment.rate"
-              :type="type"
-              :key="comment.date"
-              :isEditing="isEditing"
-              @hasChanged="editComment($event, idx)"
-              @remove="removeComment(idx)"
+            v-for="(comment, idx) in comments"
+            :title="comment.title"
+            :content="comment.content"
+            :date="comment.date"
+            :rate="comment.rate"
+            :type="type"
+            :key="comment.date"
+            :isEditing="isEditing"
+            @hasChanged="editComment($event, idx)"
+            @remove="removeComment(idx)"
           />
-          </div>
-          <div class="right-panel">
-            <InfoDocker :website="website" :address="address" :phone="phone" :mail="mail" 
-                      :type="type" :iframeUrl="iframeUrl" :isEditing="isEditing" 
-                      @hasChanged="updateInfos" />
-          </div>
+        </div>
+        <div class="right-panel">
+          <InfoDocker
+            :website="website"
+            :address="address"
+            :phone="phone"
+            :mail="mail"
+            :type="type"
+            :iframeUrl="iframeUrl"
+            :isEditing="isEditing"
+            @hasChanged="updateInfos"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -48,8 +83,9 @@ import NavigationBar from "../components/NavigationBar.vue";
 import InfoDocker from "../components/InfoDocker.vue";
 import Comment from "../components/Comment.vue";
 import Rating from "../components/Rating.vue";
-import EditableMarkdown from "../components/EditableMarkdown.vue"
-import Parse from 'parse'
+import EditableMarkdown from "../components/EditableMarkdown.vue";
+import Parse from "parse";
+import parse from "../mixins/parse.ts";
 
 export default {
   name: "PoI",
@@ -59,8 +95,9 @@ export default {
     InfoDocker,
     Comment,
     Rating,
-    EditableMarkdown
+    EditableMarkdown,
   },
+  mixins: [parse],
   data() {
     return {
       parentName: "",
@@ -77,111 +114,87 @@ export default {
       isEditing: false,
       loggedIn: Parse.User.current() != undefined,
       rateChanged: false,
-      hasLoaded: false
+      hasLoaded: false,
     };
   },
   async created() {
-    this.loadData()
+    this.loadData();
   },
   watch: {
-    '$route': 'loadData'
+    $route: "loadData",
   },
   async beforeRouteLeave(to, from, next) {
-        if(this.isEditing) {
-            try {
-              const isOk = await this.$confirm("Sauvegarder ?");
-              if(isOk)
-                await this.finishEdit();
-            } finally {
-              next();
-            }
-        } else
-          next();
-    },
+    if (this.isEditing) {
+      try {
+        const isOk = await this.$confirm("Sauvegarder ?");
+        if (isOk) await this.finishEdit();
+      } finally {
+        next();
+      }
+    } else next();
+  },
   computed: {
     currentRate() {
       this.rateChanged;
-      if(this.comments.length > 0)
-        return this.comments[0].rate;
+      if (this.comments.length > 0) return this.comments[0].rate;
       return 0;
     },
     parent() {
       return {
         name: this.parentName,
-        url: "/world/" + this.$route.params.region
-      }
-    }
+        url: "/world/" + this.$route.params.region,
+      };
+    },
   },
   methods: {
     changeLogin(newValue) {
-        this.loggedIn = newValue;
+      this.loggedIn = newValue;
     },
     async loadData() {
-      Parse.Cloud.run("getPoi", {region: this.$route.params.region, poi: this.$route.params.poi}).then( ( answer ) => {
-        if(answer === undefined || answer.code >= 500) {
-            this.$alert("Impossible de se connecter à Parse... Veuillez réessayer ou contacter un administrateur.");
-            return;
-        } else if(answer.code === 403) {
-            this.$alert("Veuillez vous connecter");
-            return;
-        } else if(answer.code === 404)
-            return this.$router.push('/404');
-        else if(answer.code !== 200) {
-            this.$alert("Erreur inconnue: code " + answer.code);
-            return;
-        }
-        const data = answer.poi;
-        this.parentName = data.parentName;
-        this.name = data.name;
-        this.description = data.description;
-        this.address = data.address;
-        this.comments = data.comments;
-        this.images = data.images;
-        this.mail = data.mail;
-        this.phone = data.phone;
-        this.type = data.type;
-        this.website = data.website;
-        this.iframeUrl = data.iframeUrl;
-        if(this.$route.query.edit == 1)
-          this.isEditing = true;
-        this.hasLoaded = true;
-      });
+      this.callParse(
+        "getPoi",
+        { region: this.$route.params.region, poi: this.$route.params.poi },
+        (answer) => {
+          const data = answer.poi;
+          this.parentName = data.parentName;
+          this.name = data.name;
+          this.description = data.description;
+          this.address = data.address;
+          this.comments = data.comments;
+          this.images = data.images;
+          this.mail = data.mail;
+          this.phone = data.phone;
+          this.type = data.type;
+          this.website = data.website;
+          this.iframeUrl = data.iframeUrl;
+          if (this.$route.query.edit == 1) this.isEditing = true;
+          this.hasLoaded = true;
+        },
+        this
+      );
     },
     beginEdit() {
-        this.isEditing = true;
+      this.isEditing = true;
     },
     finishEdit() {
       this.isEditing = false;
       const params = {
-          region: this.$route.params.region,
-          poi: this.$route.params.poi,
-          data: {
-              name: this.name,
-              address: this.address,
-              comments: this.comments,
-              description: this.description,
-              iframeUrl: this.iframeUrl,
-              images: this.images,
-              mail: this.mail,
-              phone: this.phone,
-              website: this.website,
-              type: this.type
-          }
-      }
-      Parse.Cloud.run("updatePoi", params).then( ( answer ) => {
-        if(answer === undefined || answer.code >= 500) {
-            this.$alert("Impossible de se connecter à Parse... Veuillez réessayer ou contacter un administrateur.");
-            return;
-        } else if(answer.code === 403) {
-            this.$alert("Veuillez vous connecter");
-            return;
-        } else if(answer.code === 404)
-            return this.$router.push('/404');
-        else if(answer.code !== 200) {
-            this.$alert("Erreur inconnue: code " + answer.code);
-            return;
-        }
-      });
+        region: this.$route.params.region,
+        poi: this.$route.params.poi,
+        data: {
+          name: this.name,
+          address: this.address,
+          comments: this.comments,
+          description: this.description,
+          iframeUrl: this.iframeUrl,
+          images: this.images,
+          mail: this.mail,
+          phone: this.phone,
+          website: this.website,
+          type: this.type,
+        },
+      };
+      this.callParse("updatePoi", params, () => {}, this);
     },
     updateInfos(data) {
       this.address = data.address;
@@ -195,15 +208,15 @@ export default {
         title: "",
         content: "",
         date: "",
-        rate: 0
-      })
+        rate: 0,
+      });
     },
     editComment(data, nb) {
       this.comments[nb] = {
         title: data.title,
         content: data.content,
         date: data.date,
-        rate: data.rate
+        rate: data.rate,
       };
       this.rateChanged = !this.rateChanged;
     },
@@ -212,8 +225,8 @@ export default {
     },
     updateImages(img) {
       this.images = img;
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -246,16 +259,14 @@ export default {
 }
 
 .main-content textarea {
-  margin: 20px; 
+  margin: 20px;
   min-height: 100px;
 }
-
 
 .description-content {
   justify-content: left;
   text-align: justify;
 }
-
 
 .right-panel {
   display: flex;
@@ -268,5 +279,4 @@ export default {
     width: 35%;
   }
 }
-
 </style>

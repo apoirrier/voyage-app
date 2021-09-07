@@ -102,11 +102,12 @@ import EditableMarkdown from '../components/EditableMarkdown.vue'
 import { mapState } from 'vuex'
 import Parse from 'parse'
 import VueHorizontal from 'vue-horizontal';
-import mixin from "../mixins/imgur.ts"
+import imgur from "../mixins/imgur.ts"
+import parse from "../mixins/parse.ts"
 
 export default {
     name: "Region",
-    mixins: [mixin],
+    mixins: [imgur, parse],
     components: {
         NavigationBar,
         ImageSlider,
@@ -207,20 +208,7 @@ export default {
                     description: this.description
                 }
             }
-            Parse.Cloud.run("updateRegion", params).then( ( answer ) => {
-                if(answer === undefined || answer.code >= 500) {
-                    this.$alert("Impossible de se connecter à Parse... Veuillez réessayer ou contacter un administrateur.");
-                    return;
-                } else if(answer.code === 403) {
-                    this.$alert("Veuillez vous connecter");
-                    return;
-                } else if(answer.code === 404)
-                    return this.$router.push('/404');
-                else if(answer.code !== 200) {
-                    this.$alert("Erreur inconnue: code " + answer.code);
-                    return;
-                }
-            });
+            this.callParse("updateRegion", params, () => {}, this);
         },
         createPoi() {
             this.$prompt(this.createPoiTitle).then( (name) => {
@@ -230,39 +218,31 @@ export default {
                 else {
                     this.creationError = "";
                     const id = name.replace(/[^\w\- ]/g, '').toLowerCase().replace(/ /g, "-");
-                    Parse.Cloud.run("createPoi", {
-                            region: this.$route.params.region,
-                            poi: id,
-                            name: name,
-                            type: this.selectedTab
-                        }).then( ( answer ) => {
-                        if(answer === undefined || answer.code >= 500) {
-                            this.creationError = ("Impossible de se connecter à Parse... Veuillez réessayer ou contacter un administrateur.");
-                            return;
-                        } else if(answer.code === 403) {
-                            this.creationError = ("Veuillez vous connecter");
-                            return;
-                        } else if(answer.code === 404)
-                            return this.$router.push('/404');
-                        else if(answer.code !== 200) {
-                            this.creationError = ("Erreur inconnue: code " + answer.code);
-                            return;
-                        }
-                        this.isCreatingPoi = false;
-                        return this.$confirm("Editer la nouvelle page ?").then( (isOk) => {
-                            if(isOk) {
-                                this.finishEdit().then(() => {
-                                    return this.$router.push(("/world/" + this.$route.params.region + "/" + id + "?edit=1").split("//").join("/"));
-                                });
-                            }
-                        }).catch(() => {
-                            this.poiTabs[this.selectedTab].push({
-                                address: "",
-                                name: name,
-                                nextUrl: id
-                            });
-                        });
-                    });   
+                    this.$callParse("createPoi",
+                                    {
+                                        region: this.$route.params.region,
+                                        poi: id,
+                                        name: name,
+                                        type: this.selectedTab
+                                    },
+                                    () => {
+                                        this.isCreatingPoi = false;
+                                        this.$confirm("Editer la nouvelle page ?").then((isOk) => {
+                                            if(isOk) {
+                                                this.finishEdit().then(() => {
+                                                    this.$router.push(("/world/" + this.$route.params.region + "/" + id + "?edit=1").split("//").join("/"));
+                                                });
+                                            }
+                                        }).catch(() => {
+                                            this.poiTabs[this.selectedTab].push({
+                                                address: "",
+                                                name: name,
+                                                nextUrl: id
+                                            });
+                                        });
+                                    },
+                                    this
+                    ); 
                 }
             });
         },
@@ -273,38 +253,11 @@ export default {
                     poi: id,
                 };
 
-                Parse.Cloud.run("deletePoi", params).then((answer) => {
-                    if(answer === undefined || answer.code >= 500) {
-                        this.$alert("Impossible de se connecter à Parse... Veuillez réessayer ou contacter un administrateur.");
-                        return;
-                    } else if(answer.code === 403) {
-                        this.$alert("Veuillez vous connecter");
-                        return;
-                    } else if(answer.code === 404)
-                        return this.$router.push('/404');
-                    else if(answer.code !== 200) {
-                        this.$alert("Erreur inconnue: code " + answer.code);
-                        return;
-                    }
-                    this.poiTabs[this.selectedTab].splice(index, 1);
-                });
+                this.callParse("deletePoi", params, () => {this.poiTabs[this.selectedTab].splice(index, 1);}, this);
             });
         },
         async loadData() {
-            Parse.Cloud.run("getRegion", {region: this.$route.params.region}).then( ( answer ) => {
-                if(answer === undefined || answer.code >= 500) {
-                    this.$alert("Impossible de se connecter à Parse... Veuillez réessayer ou contacter un administrateur.");
-                    return;
-                } else if(answer.code === 403) {
-                    this.$alert("Veuillez vous connecter");
-                    return;
-                } else if(answer.code === 404)
-                    return this.$router.push('/404');
-                else if(answer.code !== 200) {
-                    this.$alert("Erreur inconnue: code " + answer.code);
-                    return;
-                }
-                                    
+            this.callParse("getRegion", {region: this.$route.params.region}, (answer) => {
                 const data = answer.response;
                 this.name = data.name;
                 this.description = data.description;
@@ -329,7 +282,7 @@ export default {
                 if(localStorage.lastTab && Object.keys(JSON.parse(localStorage.lastTab)).includes(this.$route.params.region))
                     this.selectedTab = JSON.parse(localStorage.lastTab)[this.$route.params.region];
                 this.hasLoaded = true;
-            });
+            }, this);
         },
         changeLogin(newValue) {
             this.loggedIn = newValue;

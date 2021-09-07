@@ -15,14 +15,16 @@
 import Parse from 'parse'
 import mapboxgl from "mapbox-gl";
 import NavigationBar from '../components/NavigationBar.vue'
-import mixin from "../mixins/imgur.ts"
+import imgur from "../mixins/imgur.ts"
+import parse from "../mixins/parse.ts"
+
 
 export default {
     name: "Home",
     components: {
         NavigationBar
     },
-    mixins: [mixin],
+    mixins: [imgur, parse],
     data() {
         return {
             regions: [],
@@ -67,40 +69,19 @@ export default {
             this.loggedIn = newValue;
         },
         loadData() {
-            Parse.Cloud.run("listRegion").then( (answer) => {
-                if(answer === undefined || answer.code >= 500) {
-                    this.$alert("Impossible de se connecter à Parse... Veuillez réessayer ou contacter un administrateur.");
-                    return;
-                } else if(answer.code !== 200) {
-                    this.$alert("Erreur inconnue: code " + answer.code);
-                    return;
-                }
+            this.callParse("listRegion", undefined, (answer) => {
                 this.regions = answer.regions;
-            });
-            this.addMarkers();
+                this.addMarkers();
+            }, this);
         },
         async createRegion(coordinates) {
             this.$prompt("Nouvelle région").then( (name) => {
                 if(name === undefined || name === "")
                     return;
-                Parse.Cloud.run("createRegion", {name: name, coordinates: coordinates}).then( (answer) => {
-                    if(answer === undefined || answer.code >= 500) {
-                        this.$alert("Impossible de se connecter à Parse... Veuillez réessayer ou contacter un administrateur.");
-                        return;
-                    } else if(answer.code === 403) {
-                        this.$alert("Veuillez vous connecter");
-                        return;
-                    } else if(answer.code === 400) {
-                        this.$alert("Impossible de créer une région: " + answer.error);
-                        return;
-                    }
-                    else if(answer.code !== 200) {
-                        this.$alert("Erreur inconnue: code " + answer.code);
-                        return;
-                    }
+                this.callParse("createRegion", {name: name, coordinates: coordinates}, () => {
                     const id = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(' ').join('-').toLowerCase();
-                    return this.$router.push((this.$route.fullPath + "/world/" + id + "?edit=1").split("//").join("/"));
-                });
+                    this.$router.push((this.$route.fullPath + "/world/" + id + "?edit=1").split("//").join("/"));
+                }, this);
             });
             this.pressEscape();
         },
