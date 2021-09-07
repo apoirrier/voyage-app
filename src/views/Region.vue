@@ -218,7 +218,7 @@ export default {
                 else {
                     this.creationError = "";
                     const id = name.replace(/[^\w\- ]/g, '').toLowerCase().replace(/ /g, "-");
-                    this.$callParse("createPoi",
+                    this.callParse("createPoi",
                                     {
                                         region: this.$route.params.region,
                                         poi: id,
