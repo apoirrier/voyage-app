@@ -89,13 +89,20 @@ export default {
             if(this.$refs.file.files.length > 0) {
                 this.isLoading = true;
                 const promises = Array.from(this.$refs.file.files).map(this.upload);
-                Promise.all(promises).then((new_images) => {
-                    this.images.push(...new_images);
-                    this.$emit("images-changed", this.images);
-                    this.currentImage = this.images.length - 1;
+                Promise.all(promises).then((new_images_urls) => {
+                    const total = new_images_urls.length;
+                    new_images_urls = new_images_urls.filter(url => url); // Remove images that failed
+                    const new_total = new_images_urls.length;
+                    if(new_total < total)
+                        this.$alert("Certaines images n'ont pas été téléchargées correctement", "Erreur de téléchargement", "warning");
+                    if(new_total > 0) {
+                        this.images.push(...new_images_urls);
+                        this.$emit("images-changed", this.images);
+                        this.currentImage = this.images.length - 1;
+                    }
                     this.isLoading = false;
                 }).catch( (error) => {
-                    this.$alert(error);
+                    this.$alert("Blop");
                 });
             }
         },

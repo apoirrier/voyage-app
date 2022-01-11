@@ -14,7 +14,9 @@ export default {
             }
             else if(answer.code === 209) {
                 localStorage.removeItem("Parse/" + process.env.VUE_APP_PARSE_APP_ID + "/currentUser");
-                caller.$alert("Session expirée");
+                caller.$alert("Rechargement de la page", "Session expirée", "error").then(() => {
+                    location.reload();
+                });
             }
             else
                 caller.$alert("Erreur inconnue: code " + answer.code);

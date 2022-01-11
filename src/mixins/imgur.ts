@@ -13,7 +13,9 @@ export default {
                             }
                         }).then((answer: any) => {
                             return answer.data.data.link;
-                        })
+                        }).catch(() => {
+                            return null;
+                        });
         },
         getImageUrl(image: any) {
             if(image === undefined)
