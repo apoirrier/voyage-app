@@ -14,6 +14,7 @@
 <script>
 import Parse from 'parse'
 import mapboxgl from "mapbox-gl";
+import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import NavigationBar from '../components/NavigationBar.vue'
 import imgur from "../mixins/imgur.ts"
 import parse from "../mixins/parse.ts"
@@ -42,6 +43,9 @@ export default {
             style: "mapbox://styles/mapbox/outdoors-v11",
             zoom: 1.5
         });
+
+        const language = new MapboxLanguage({defaultLanguage: 'fr'});
+        this.map.addControl(language);
 
         const nav = new mapboxgl.NavigationControl();
         this.map.addControl(nav, "bottom-right");
