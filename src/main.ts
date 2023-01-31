@@ -1,14 +1,13 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
 import rate from 'vue-rate'
 import 'vue-rate/dist/vue-rate.css'
-import VueSimpleAlert from "vue-simple-alert"
+import VueSimpleAlert from "vue3-simple-alert"
 import Parse from 'parse'
 import mapboxgl from "mapbox-gl";
 import VueSanitize from "vue-sanitize";
-import VueHorizontal from "vue-horizontal";
 import VueClipboard from 'vue-clipboard2';
 
 const defaultSanitizeOptions = {
@@ -39,20 +38,16 @@ const defaultSanitizeOptions = {
   enforceHtmlBoundary: false
 }
 
-Vue.config.productionTip = false
-Vue.use(rate);
-Vue.use(VueSimpleAlert);
-Vue.use(Parse);
-Vue.use(mapboxgl);
-Vue.use(VueSanitize, defaultSanitizeOptions);
-Vue.use(VueHorizontal);
-Vue.use(VueClipboard);
-
 Parse.initialize(process.env.VUE_APP_PARSE_APP_ID, process.env.VUE_APP_PARSE_JS_KEY);
 Parse.serverURL = 'https://parseapi.back4app.com/'
 
-new Vue({
-  router,
-  store,
-  render: h => h(App)
-}).$mount('#app')
+const app = createApp(App);
+app.use(rate);
+app.use(VueSimpleAlert as any);
+app.use(Parse);
+app.use(mapboxgl);
+app.use(VueSanitize, defaultSanitizeOptions);
+app.use(VueClipboard);
+app.use(router);
+app.use(store);
+app.mount('#app');

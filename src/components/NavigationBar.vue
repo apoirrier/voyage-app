@@ -24,8 +24,9 @@
 <script>
 import Parse from 'parse'
 import LoginDialog from './LoginDialog.vue'
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
     name: "NavigationBar",
     components: {
         LoginDialog
@@ -73,7 +74,7 @@ export default {
             this.isLoggingIn = true;
         }
     }
-}
+})
 </script>
 
 <style lang="scss">

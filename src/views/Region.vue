@@ -67,7 +67,7 @@
                         <div v-if="isEditing">
                             <hr>
                             <span> Clique sur une image pour copier son adresse : </span>
-                            <vue-horizontal responsive>
+                            <div class="horizontal">
                                 <section v-for="(img, idx) in this.generalTabs[this.selectedTab].images" :key="getImageUrl(img)" style="position: relative;">
                                     <img :src="getImageUrl(img)" class="imageSlider" @click="copy(img)" title="Copy to clipboard">
                                     <div class="cross_close" style="right: 10px;" @click="removeImage(idx)">
@@ -85,7 +85,7 @@
                                         </svg>
                                     </label>
                                 </section>
-                            </vue-horizontal>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -101,7 +101,6 @@ import Carte from '../components/Carte.vue'
 import EditableMarkdown from '../components/EditableMarkdown.vue'
 import { mapState } from 'vuex'
 import Parse from 'parse'
-import VueHorizontal from 'vue-horizontal';
 import imgur from "../mixins/imgur.ts"
 import parse from "../mixins/parse.ts"
 
@@ -112,8 +111,7 @@ export default {
         NavigationBar,
         ImageSlider,
         Carte,
-        EditableMarkdown,
-        VueHorizontal
+        EditableMarkdown
     },
     data() {
         return {
@@ -479,6 +477,11 @@ export default {
 
 .imageSlider:hover {
     opacity:0.6;
+}
+
+.horizontal {
+    display: flex;
+    flex-direction: row;
 }
 
 </style>

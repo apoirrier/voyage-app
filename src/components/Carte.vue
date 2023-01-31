@@ -9,8 +9,9 @@
 
 <script>
 import Rating from "./Rating.vue"
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
     name: "Carte",
     components: {
         Rating
@@ -29,7 +30,7 @@ export default {
             return allInfos[allInfos.length - 1];
         }
     }
-}
+})
 </script>
 
 <style>

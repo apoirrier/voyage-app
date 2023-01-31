@@ -4,8 +4,9 @@
 
 <script>
 import showdown from "showdown";
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
     name: "EditableMarkdown",
     props: {
         inputData: String
@@ -17,7 +18,7 @@ export default {
             return this.$sanitize(unsafeData);
         }
     }
-}
+})
 </script>
 
 <style lang="scss">
