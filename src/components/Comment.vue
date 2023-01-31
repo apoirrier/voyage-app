@@ -1,8 +1,8 @@
 <template>
     <div class=comment>
         <div class=comment-title>
-            <span v-if="!isEditing"> {{ title }} </span>
-            <input v-else type="text" v-model="title" @change="onChange">
+            <span v-if="!isEditing"> {{ _title }} </span>
+            <input v-else type="text" v-model="_title" @change="onChange">
             <div v-if="isEditing" class="cross_close_comment" @click="remove"> 
                 <svg viewBox="0 0 365.71733 365">
                     <path d="m356.339844 296.347656-286.613282-286.613281c-12.5-12.5-32.765624-12.5-45.246093 0l-15.105469 15.082031c-12.5 12.503906-12.5 32.769532 0 45.25l286.613281 286.613282c12.503907 12.5 32.769531 12.5 45.25 0l15.082031-15.082032c12.523438-12.480468 12.523438-32.75.019532-45.25zm0 0" />
@@ -10,12 +10,12 @@
                 </svg>
             </div>
         </div>
-        <EditableMarkdown v-if="!isEditing" class=comment-content :inputData="content"/>
-        <textarea v-else class="pinput" v-model="content" @change="onChange" />
+        <EditableMarkdown v-if="!isEditing" class=comment-content :inputData="_content"/>
+        <textarea v-else class="pinput" v-model="_content" @change="onChange" />
         <div class=comment-bottom>
-            <Rating class="comment-rating" :score="rate" :type="type" :editable="isEditing" @after-rate="rateChanged"/>
-            <div v-if="!isEditing" class=date> {{ date }} </div>
-            <input type="date" v-else v-model="date" @change="onChange" class=date>
+            <Rating class="comment-rating" :score="_rate" :type="type" :editable="isEditing" @after-rate="rateChanged"/>
+            <div v-if="!isEditing" class=date> {{ _date }} </div>
+            <input type="date" v-else v-model="_date" @change="onChange" class=date>
         </div>
     </div>
 </template>
@@ -23,8 +23,9 @@
 <script>
 import Rating from './Rating.vue'
 import EditableMarkdown from './EditableMarkdown.vue'
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
     name: "Comment",
     components: {
         Rating,
@@ -56,30 +57,33 @@ export default {
             default: false
         }
     },
+    data () {
+        return {
+            _title: this.title,
+            _content: this.content,
+            _rate: this.rate,
+            _date: this.date,
+        }
+    },
     methods: {
         onChange() {
             const data = {
-                title: this.title,
-                content: this.content,
-                rate: this.rate,
-                date: this.date,
+                title: this._title,
+                content: this._content,
+                rate: this._rate,
+                date: this._date,
             }
             this.$emit("hasChanged", data);
         },
         rateChanged(newRate) {
-            const data = {
-                title: this.title,
-                content: this.content,
-                rate: newRate,
-                date: this.date,
-            }
-            this.$emit("hasChanged", data);
+            this._rate = newRate;
+            this.onChange();
         },
         remove() {
             this.$emit("remove");
         }
     }
-}
+})
 </script>
 
 <style lang="scss">

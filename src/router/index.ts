@@ -1,38 +1,34 @@
-import Vue from 'vue'
-import VueRouter, { RouteConfig } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import PoI from '../views/PoI.vue'
 import Home from '../views/Home.vue'
 import Region from '../views/Region.vue'
 import PageDoesNotExist from '../views/PageDoesNotExist.vue'
 
-Vue.use(VueRouter)
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/',
+      name: 'Home',
+      component: Home
+    },
+    {
+      path: '/world/:region',
+      component: Region
+    },
+    {
+      path: '/world/:region/:poi',
+      component: PoI
+    },
+    {
+      path: '/404',
+      component: PageDoesNotExist
+    },
+    {
+      path: '/:catchAll(.*)',
+      redirect: '/404'
+    }
+  ]
+});
 
-  const routes: Array<RouteConfig> = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/world/:region',
-    component: Region
-  },
-  {
-    path: '/world/:region/:poi',
-    component: PoI
-  },
-  {
-    path: '/404',
-    component: PageDoesNotExist
-  },
-  {
-    path: '*',
-    redirect: '/404'
-  }
-]
-
-const router = new VueRouter({
-  routes
-})
-
-export default router
+export default router;

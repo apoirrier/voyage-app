@@ -2,41 +2,41 @@
     <div class="docker-content-default" :style="styleColor">
         <h2> Informations pratiques </h2>
 
-        <a class="infodocker_item" :href="website" v-if="hasWebsite && !isEditing" style="color: #e7e7e7;"> 
-             <img class=infodocker_icon src="images/www.png"> {{ website }}
+        <a class="infodocker_item" :href="_website" v-if="hasWebsite && !isEditing" style="color: #e7e7e7;"> 
+             <img class=infodocker_icon src="images/www.png"> {{ _website }}
         </a>
         <div v-else-if="isEditing">
             <img class=infodocker_icon src="images/www.png">
-            <input type="url" v-model="website" @change="onChange">
+            <input type="url" v-model="_website" @change="onChange">
         </div>
 
         <a class="infodocker_item" :href="mailto" v-if="hasMail && !isEditing" style="color: #e7e7e7;"> 
-             <img class=infodocker_icon src="images/at.png"> {{ mail }}
+             <img class=infodocker_icon src="images/at.png"> {{ _mail }}
         </a>
         <div v-else-if="isEditing">
             <img class=infodocker_icon src="images/at.png">
-            <input type="email" v-model="mail" @change="onChange">
+            <input type="email" v-model="_mail" @change="onChange">
         </div>
 
         <div class="infodocker_item" v-if="hasPhone && !isEditing">
-            <img class=infodocker_icon src="images/phone.png"> {{ phone }}
+            <img class=infodocker_icon src="images/phone.png"> {{ _phone }}
         </div>
         <div v-else-if="isEditing">
             <img class=infodocker_icon src="images/phone.png">
-            <input type="tel" v-model="phone" @change="onChange">
+            <input type="tel" v-model="_phone" @change="onChange">
         </div>
 
         <div class="infodocker_item" v-if="hasAddress && !isEditing">
-            <img class=infodocker_icon src="images/address.png"> {{ address }}
+            <img class=infodocker_icon src="images/address.png"> {{ _address }}
         </div>
         <div v-else-if="isEditing">
             <img class=infodocker_icon src="images/address.png">
-            <input v-model="address" @change="onChange">
+            <input v-model="_address" @change="onChange">
         </div>
 
         <div class="googlemap" v-if="!isEditing">
             <iframe
-            :src="iframeUrl"
+            :src="_iframeUrl"
             width="400"
             height="300"
             frameborder="0"
@@ -48,7 +48,7 @@
         </div>
         <div v-else>
             Minimap: 
-            <input type="url" v-model="iframeUrl" @change="onChange">
+            <input type="url" v-model="_iframeUrl" @change="onChange">
         </div>
         <p/>
     </div>
@@ -56,8 +56,9 @@
 
 <script>
 import { mapState } from 'vuex'
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
     name: "InfoDocker",
     props: {
         website: {
@@ -89,21 +90,30 @@ export default {
             default: false
         }
     },
+    data () {
+        return {
+            _website: this.website,
+            _phone: this.phone,
+            _address: this.address,
+            _mail: this.mail,
+            _iframeUrl: this.iframeUrl
+        }
+    },
     computed: {
         hasWebsite() {
-            return this.website.length != 0
+            return this._website.length != 0
         },
         hasPhone() {
-            return this.phone.length != 0
+            return this._phone.length != 0
         },
         hasAddress() {
-            return this.address.length != 0
+            return this._address.length != 0
         },
         hasMail() {
-            return this.mail.length != 0
+            return this._mail.length != 0
         },
         mailto() {
-            return "mailto:" + this.mail
+            return "mailto:" + this._mail
         },
         ...mapState(['colors']),
         styleColor() {
@@ -113,16 +123,16 @@ export default {
     methods: {
         onChange() {
             const data = {
-                website: this.website,
-                phone: this.phone,
-                address: this.address,
-                mail: this.mail,
-                iframeUrl: this.iframeUrl
+                website: this._website,
+                phone: this._phone,
+                address: this._address,
+                mail: this._mail,
+                iframeUrl: this._iframeUrl
             }
             this.$emit("hasChanged", data);
         }
     }
-}
+})
 </script>
 
 <style lang="scss">

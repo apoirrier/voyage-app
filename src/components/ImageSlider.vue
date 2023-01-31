@@ -36,8 +36,9 @@
 
 <script>
 import mixin from '../mixins/imgur.ts'
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
     name: "ImageSlider",
     mixins: [mixin],
     data() {
@@ -127,7 +128,7 @@ export default {
     beforeDestroy() {
         clearInterval(this.timer)
     }
-}
+})
 </script>
 
 <style lang="scss">

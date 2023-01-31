@@ -38,8 +38,9 @@
 
 <script>
 import { mapState } from 'vuex'
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
     name: "Rating",
     props: {
         score: {
@@ -72,7 +73,7 @@ export default {
             this.$emit("after-rate", newRate);
         }
     }
-}
+})
 </script>
 
 <style lang="scss">
