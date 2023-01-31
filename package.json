@@ -19,10 +19,10 @@
     "parse": "^3.4.1",
     "showdown": "^2.0.0",
     "vue": "^3.2.45",
+    "vue-3-sanitize": "^0.1.4",
     "vue-clipboard2": "^0.3.3",
     "vue-rate": "^2.4.1",
     "vue-router": "^4.1.6",
-    "vue-sanitize": "^0.2.1",
     "vue3-simple-alert": "^1.0.4",
     "vuex": "^4.1.0"
   },
