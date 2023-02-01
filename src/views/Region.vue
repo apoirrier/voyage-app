@@ -1,6 +1,6 @@
 <template>
     <div>
-        <img v-if="!hasLoaded" src="images/teleport.jpg" style="height: 80%; width: 100%">
+        <img v-if="!hasLoaded" src="/images/teleport.jpg" style="height: 80%; width: 100%">
         <div v-else class=region>
             <NavigationBar :name="name" @login-change="changeLogin"/>
             <ImageSlider :images="images" :altText="name" :isEditing="isEditing" :imageName="this.$route.params.region" @images-changed="updateImages" />
@@ -9,8 +9,8 @@
                 <div/>
                 <h1 v-if="!isEditing"> {{ name }} </h1>
                 <input v-else class="h1input" v-model="name">
-                <img v-if="isEditing" src="images/edit_active.png" class="edit_button edit_button_active" @click="finishEdit">
-                <img v-else-if="!isEditing && loggedIn" src="images/edit.png" class="edit_button" @click="beginEdit">
+                <img v-if="isEditing" src="/images/edit_active.png" class="edit_button edit_button_active" @click="finishEdit">
+                <img v-else-if="!isEditing && loggedIn" src="/images/edit.png" class="edit_button" @click="beginEdit">
                 <div v-else />
             </div>
 

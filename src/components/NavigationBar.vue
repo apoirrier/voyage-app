@@ -7,7 +7,7 @@
                 {{ name }} 
             </div>
             <div class=logo>
-                <img src="images/logo.png">
+                <img src="/images/logo.png">
             </div>
             <div> 
                 <span v-if="loggedIn" @click="logout"> Logout </span>
