@@ -19,7 +19,7 @@ export default {
         },
         getImageUrl(image: any) {
             if(image === undefined)
-                return "images/undefined";
+                return "/images/undefined";
             if(typeof image.url === 'function')
                 return image.url();
             return image;

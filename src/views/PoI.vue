@@ -2,7 +2,7 @@
   <div>
     <img
       v-if="!hasLoaded"
-      src="images/teleport.jpg"
+      src="/images/teleport.jpg"
       style="height: 80%; width: 100%"
     />
     <div v-else class="poi">
@@ -21,13 +21,13 @@
       <div style="text-align: right">
         <img
           v-if="isEditing"
-          src="images/edit_active.png"
+          src="/images/edit_active.png"
           class="edit_button edit_button_active"
           @click="finishEdit"
         />
         <img
           v-else-if="!isEditing && loggedIn"
-          src="images/edit.png"
+          src="/images/edit.png"
           class="edit_button"
           @click="beginEdit"
         />

@@ -3,34 +3,34 @@
         <h2> Informations pratiques </h2>
 
         <a class="infodocker_item" :href="_website" v-if="hasWebsite && !isEditing" style="color: #e7e7e7;"> 
-             <img class=infodocker_icon src="images/www.png"> {{ _website }}
+             <img class=infodocker_icon src="/images/www.png"> {{ _website }}
         </a>
         <div v-else-if="isEditing">
-            <img class=infodocker_icon src="images/www.png">
+            <img class=infodocker_icon src="/images/www.png">
             <input type="url" v-model="_website" @change="onChange">
         </div>
 
         <a class="infodocker_item" :href="mailto" v-if="hasMail && !isEditing" style="color: #e7e7e7;"> 
-             <img class=infodocker_icon src="images/at.png"> {{ _mail }}
+             <img class=infodocker_icon src="/images/at.png"> {{ _mail }}
         </a>
         <div v-else-if="isEditing">
-            <img class=infodocker_icon src="images/at.png">
+            <img class=infodocker_icon src="/images/at.png">
             <input type="email" v-model="_mail" @change="onChange">
         </div>
 
         <div class="infodocker_item" v-if="hasPhone && !isEditing">
-            <img class=infodocker_icon src="images/phone.png"> {{ _phone }}
+            <img class=infodocker_icon src="/images/phone.png"> {{ _phone }}
         </div>
         <div v-else-if="isEditing">
-            <img class=infodocker_icon src="images/phone.png">
+            <img class=infodocker_icon src="/images/phone.png">
             <input type="tel" v-model="_phone" @change="onChange">
         </div>
 
         <div class="infodocker_item" v-if="hasAddress && !isEditing">
-            <img class=infodocker_icon src="images/address.png"> {{ _address }}
+            <img class=infodocker_icon src="/images/address.png"> {{ _address }}
         </div>
         <div v-else-if="isEditing">
-            <img class=infodocker_icon src="images/address.png">
+            <img class=infodocker_icon src="/images/address.png">
             <input v-model="_address" @change="onChange">
         </div>
 

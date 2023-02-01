@@ -12,8 +12,8 @@
         <img class="image-slider_image"
             :src="imageUrl"
             :alt="altText" >
-        <img class="fading-button right-arrow" src="images/right-red.png" alt="Next image" @click="incrementValue(1)">
-        <img class="fading-button left-arrow" src="images/left-red.png" alt="Previous image" @click="incrementValue(-1)">
+        <img class="fading-button right-arrow" src="/images/right-red.png" alt="Next image" @click="incrementValue(1)">
+        <img class="fading-button left-arrow" src="/images/left-red.png" alt="Previous image" @click="incrementValue(-1)">
         <input type="file" id="file" ref="file" accept="image/*" multiple class="hidden_input" @change="handleFileUpload" />
         <label v-if="isEditing" for="file" class="fading-button file_button"> 
             <svg viewBox="0 0 512 512">
