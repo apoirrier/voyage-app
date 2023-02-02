@@ -18,7 +18,7 @@ import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import NavigationBar from '../components/NavigationBar.vue'
 import imgur from "../mixins/imgur.ts"
 import parse from "../mixins/parse.ts"
-
+import VueSimpleAlert from 'vue3-simple-alert'
 
 export default {
     name: "Home",
@@ -79,7 +79,7 @@ export default {
             }, this);
         },
         async createRegion(coordinates) {
-            this.$prompt("Nouvelle région").then( (name) => {
+            VueSimpleAlert.prompt("Nouvelle région").then( (name) => {
                 if(name === undefined || name === "")
                     return;
                 this.callParse("createRegion", {name: name, coordinates: coordinates}, () => {

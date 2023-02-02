@@ -36,6 +36,7 @@
 
 <script>
 import mixin from '../mixins/imgur.ts'
+import VueSimpleAlert from 'vue3-simple-alert';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -95,7 +96,7 @@ export default defineComponent({
                     new_images_urls = new_images_urls.filter(url => url); // Remove images that failed
                     const new_total = new_images_urls.length;
                     if(new_total < total)
-                        this.$alert("Certaines images n'ont pas été téléchargées correctement", "Erreur de téléchargement", "warning");
+                        VueSimpleAlert.alert("Certaines images n'ont pas été téléchargées correctement", "Erreur de téléchargement", "warning");
                     if(new_total > 0) {
                         this.images.push(...new_images_urls);
                         this.$emit("images-changed", this.images);
@@ -103,12 +104,12 @@ export default defineComponent({
                     }
                     this.isLoading = false;
                 }).catch( (error) => {
-                    this.$alert("Blop");
+                    VueSimpleAlert.alert("Blop");
                 });
             }
         },
         removeImage() {
-            this.$confirm("Êtes-vous sûr de vouloir supprimer cette image ?").then( () => {
+            VueSimpleAlert.confirm("Êtes-vous sûr de vouloir supprimer cette image ?").then( () => {
                 if(this.images.length > 0)
                     this.images.splice(this.currentImage, 1);
                 this.currentImage %= this.images.length;

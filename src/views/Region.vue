@@ -103,6 +103,7 @@ import { mapState } from 'vuex'
 import Parse from 'parse'
 import imgur from "../mixins/imgur.ts"
 import parse from "../mixins/parse.ts"
+import VueSimpleAlert from 'vue3-simple-alert'
 
 export default {
     name: "Region",
@@ -138,7 +139,7 @@ export default {
     async beforeRouteLeave(to, from, next) {
         if(this.isEditing) {
             try {
-              const isOk = await this.$confirm("Sauvegarder ?");
+              const isOk = await VueSimpleAlert.confirm("Sauvegarder ?");
               if(isOk)
                 await this.finishEdit();
             } finally {
@@ -209,7 +210,7 @@ export default {
             this.callParse("updateRegion", params, () => {}, this);
         },
         createPoi() {
-            this.$prompt(this.createPoiTitle).then( (name) => {
+            VueSimpleAlert.prompt(this.createPoiTitle).then( (name) => {
                 this.creationError = ""
                 if(name.length === 0)
                     this.creationError = "Un nom doit être fourni";
@@ -225,7 +226,7 @@ export default {
                                     },
                                     () => {
                                         this.isCreatingPoi = false;
-                                        this.$confirm("Editer la nouvelle page ?").then((isOk) => {
+                                        VueSimpleAlert.confirm("Editer la nouvelle page ?").then((isOk) => {
                                             if(isOk) {
                                                 this.finishEdit().then(() => {
                                                     this.$router.push(("/world/" + this.$route.params.region + "/" + id + "?edit=1").split("//").join("/"));
@@ -245,7 +246,7 @@ export default {
             });
         },
         removePoi(id, index) {
-            this.$confirm("Êtes-vous sûr de vouloir supprimer cette carte ?").then( () => {
+            VueSimpleAlert.confirm("Êtes-vous sûr de vouloir supprimer cette carte ?").then( () => {
                 const params = {
                     region: this.$route.params.region,
                     poi: id,
@@ -289,7 +290,7 @@ export default {
             this.images = img;
         },
         removeTab() {
-            this.$confirm("Êtes-vous sûr de vouloir supprimer cet onglet ?").then( () => {
+            VueSimpleAlert.confirm("Êtes-vous sûr de vouloir supprimer cet onglet ?").then( () => {
                 this.generalTabs.splice(this.selectedTab, 1);
                 if(this.generalTabs.length === 0)
                     this.selectedTab = "hotel";
@@ -308,7 +309,7 @@ export default {
             this.generalTabs[this.selectedTab].images.splice(idx, 1);
         },
         newGeneralTab() {
-            this.$prompt("Nouvel onglet").then( (title) => {
+            VueSimpleAlert.prompt("Nouvel onglet").then( (title) => {
                 if(title.length !== 0) {
                     this.generalTabs.push({
                         title: title,

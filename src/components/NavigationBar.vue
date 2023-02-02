@@ -24,6 +24,7 @@
 <script>
 import Parse from 'parse'
 import LoginDialog from './LoginDialog.vue'
+import VueSimpleAlert from 'vue3-simple-alert'
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -50,21 +51,21 @@ export default defineComponent({
     methods: {
         async logout() {
             Parse.User.logOut().then( () => {
-                this.$alert("Vous êtes déconnecté");
+                VueSimpleAlert.alert("Vous êtes déconnecté");
                 this.loggedIn = false;
                 this.$emit("login-change", this.loggedIn);
             }, err => {
-                this.$alert('Erreur lors de la déconnexion : ', err);
+                VueSimpleAlert.alert('Erreur lors de la déconnexion : ', err);
             });
         },
         async login(loginInfo) {
             Parse.User.logIn(loginInfo.username, loginInfo.password).then(() => {
                 this.isLoggingIn = false;
-                this.$alert('Connecté !');
+                VueSimpleAlert.alert('Connecté !');
                 this.loggedIn = true;
                 this.$emit("login-change", this.loggedIn);
             }).catch( (error) => {
-                this.$alert("Erreur lors de la connexion : " + error.message);
+                VueSimpleAlert.alert("Erreur lors de la connexion : " + error.message);
             });
         }, 
         cancel() {
