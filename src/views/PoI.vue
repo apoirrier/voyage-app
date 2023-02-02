@@ -86,6 +86,7 @@ import Rating from "../components/Rating.vue";
 import EditableMarkdown from "../components/EditableMarkdown.vue";
 import Parse from "parse";
 import parse from "../mixins/parse.ts";
+import VueSimpleAlert from 'vue3-simple-alert';
 
 export default {
   name: "PoI",
@@ -126,7 +127,7 @@ export default {
   async beforeRouteLeave(to, from, next) {
     if (this.isEditing) {
       try {
-        const isOk = await this.$confirm("Sauvegarder ?");
+        const isOk = await VueSimpleAlert.confirm("Sauvegarder ?");
         if (isOk) await this.finishEdit();
       } finally {
         next();

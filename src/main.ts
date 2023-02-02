@@ -4,7 +4,6 @@ import router from './router'
 import store from './store'
 import rate from 'vue-rate'
 import 'vue-rate/dist/vue-rate.css'
-import VueSimpleAlert from "vue3-simple-alert"
 import Parse from 'parse'
 import mapboxgl from "mapbox-gl";
 import Vue3Sanitize from "vue-3-sanitize";
@@ -43,7 +42,6 @@ Parse.serverURL = 'https://parseapi.back4app.com/'
 
 const app = createApp(App);
 app.use(rate);
-app.use(VueSimpleAlert as any);
 app.use(Parse);
 app.use(mapboxgl);
 app.use(Vue3Sanitize, defaultSanitizeOptions);
