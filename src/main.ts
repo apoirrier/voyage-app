@@ -5,9 +5,8 @@ import store from './store'
 import rate from 'vue-rate'
 import 'vue-rate/dist/vue-rate.css'
 import Parse from 'parse'
-import mapboxgl from "mapbox-gl";
 import Vue3Sanitize from "vue-3-sanitize";
-import VueClipboard from 'vue-clipboard2';
+import VueClipboard from 'vue3-clipboard';
 
 const defaultSanitizeOptions = {
   allowedTags: [
@@ -42,8 +41,6 @@ Parse.serverURL = 'https://parseapi.back4app.com/'
 
 const app = createApp(App);
 app.use(rate);
-app.use(Parse);
-app.use(mapboxgl);
 app.use(Vue3Sanitize, defaultSanitizeOptions);
 app.use(VueClipboard);
 app.use(router);
