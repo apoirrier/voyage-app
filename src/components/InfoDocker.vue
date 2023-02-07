@@ -3,7 +3,7 @@
         <h2> Informations pratiques </h2>
 
         <a class="infodocker_item" :href="_website" v-if="hasWebsite && !isEditing" style="color: #e7e7e7;"> 
-             <img class=infodocker_icon src="/images/www.png"> {{ _website }}
+             <img class=infodocker_icon src="/images/www.png"> {{ host }}
         </a>
         <div v-else-if="isEditing">
             <img class=infodocker_icon src="/images/www.png">
@@ -114,6 +114,18 @@ export default defineComponent({
         },
         mailto() {
             return "mailto:" + this._mail
+        },
+        host() {
+            if(!this.hasWebsite)
+                return "";
+            if(!this._website.includes("//")) {
+                if(!this._website.includes("/"))
+                    return this._website;
+                return this._website.split("/")[0];
+            }
+            if(!this._website.split("//")[1].includes("/"))
+                return this._website.split("//")[1];
+            return this._website.split("//")[1].split("/")[0];
         },
         ...mapState(['colors']),
         styleColor() {
