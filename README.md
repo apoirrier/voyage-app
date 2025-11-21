@@ -23,6 +23,7 @@ npm run build
 
 ### Deploy to firebase
 ```
+firebase logout && firebase login
 firebase deploy
 ```
 
