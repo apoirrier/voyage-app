@@ -188,6 +188,11 @@ export default {
             localStorage.lastTab = JSON.stringify(lastTab);
         },
         nextUrl(url) {
+            console.log(url)
+            if(url.startsWith("http")) {
+                console.log(url);
+                return url;
+            }
             return (this.$route.fullPath + "/" + url).split("//").join("/");
         },
         getCategoryName(type) {

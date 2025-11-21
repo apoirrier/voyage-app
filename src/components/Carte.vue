@@ -1,10 +1,10 @@
 <template>
-    <router-link :to="nextUrl" class="carte">
+    <a :href="nextUrl" class="carte">
         <img class="carte_img" :src="image">
         <h2 class="carte_txt" style="margin: 7px; "> {{ name }} </h2>
         <span class="carte_txt" style="margin-left: 10px; margin-right: 10px;"> {{ shortAddress }} </span>
         <Rating v-if="this.rate !== undefined" :score="rate" :type="type" />
-    </router-link>
+    </a>
 </template>
 
 <script>
