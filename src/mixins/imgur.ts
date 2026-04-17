@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { IMGUR_CONFIG } from '../config/parse';
 
 export default {
     methods: {
@@ -9,7 +10,7 @@ export default {
                         formData,
                         {
                             headers: {
-                                'Authorization': "Client-ID " + process.env.VUE_APP_IMGUR_ID
+                                'Authorization': "Client-ID " + IMGUR_CONFIG.CLIENT_ID
                             }
                         }).then((answer: any) => {
                             return answer.data.data.link;

@@ -5,6 +5,7 @@ import store from './store'
 import rate from 'vue-rate'
 import 'vue-rate/dist/vue-rate.css'
 import Parse from 'parse'
+import { PARSE_CONFIG } from './config/parse'
 import Vue3Sanitize from "vue-3-sanitize";
 import VueClipboard from 'vue3-clipboard';
 
@@ -36,8 +37,8 @@ const defaultSanitizeOptions = {
   enforceHtmlBoundary: false
 }
 
-Parse.initialize(process.env.VUE_APP_PARSE_APP_ID, process.env.VUE_APP_PARSE_JS_KEY);
-Parse.serverURL = 'https://parseapi.back4app.com/'
+Parse.initialize(PARSE_CONFIG.APP_ID, PARSE_CONFIG.JS_KEY);
+Parse.serverURL = PARSE_CONFIG.SERVER_URL;
 
 const app = createApp(App);
 app.use(rate);
