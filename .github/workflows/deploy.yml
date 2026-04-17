@@ -25,15 +25,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Save Firebase Service Account
-        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}' > firebase-key.json
 
       - name: Build application
         env:
-          VUE_APP_PARSE_APP_ID: ${{ secrets.VUE_APP_PARSE_APP_ID }}
-          VUE_APP_PARSE_JS_KEY: ${{ secrets.VUE_APP_PARSE_JS_KEY }}
-          VUE_APP_PARSE_SERVER_URL: ${{ secrets.VUE_APP_PARSE_SERVER_URL }}
-          VUE_APP_IMGUR_ID: ${{ secrets.VUE_APP_IMGUR_ID }}
+          VUE_APP_PARSE_APP_ID: ${{ vars.VUE_APP_PARSE_APP_ID }}
+          VUE_APP_PARSE_JS_KEY: ${{ vars.VUE_APP_PARSE_JS_KEY }}
+          VUE_APP_PARSE_SERVER_URL: ${{ vars.VUE_APP_PARSE_SERVER_URL }}
+          VUE_APP_IMGUR_ID: ${{ vars.VUE_APP_IMGUR_ID }}
           VUE_APP_MAPBOX_TOKEN: ${{ secrets.VUE_APP_MAPBOX_TOKEN }}
         run: npm run build
 
@@ -41,8 +39,7 @@ jobs:
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: firebase-key.json
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
           channelId: live
           projectId: voyages-pppc
 
@@ -51,5 +48,6 @@ jobs:
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: firebase-key.json
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
           projectId: voyages-pppc
+          expires: 30d
