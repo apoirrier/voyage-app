@@ -29,6 +29,7 @@ jobs:
         env:
           VUE_APP_PARSE_APP_ID: ${{ secrets.VUE_APP_PARSE_APP_ID }}
           VUE_APP_PARSE_JS_KEY: ${{ secrets.VUE_APP_PARSE_JS_KEY }}
+          VUE_APP_PARSE_SERVER_URL: ${{ secrets.VUE_APP_PARSE_SERVER_URL }}
           VUE_APP_IMGUR_ID: ${{ secrets.VUE_APP_IMGUR_ID }}
           VUE_APP_MAPBOX_TOKEN: ${{ secrets.VUE_APP_MAPBOX_TOKEN }}
         run: npm run build
