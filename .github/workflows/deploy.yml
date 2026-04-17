@@ -31,7 +31,7 @@ jobs:
           VUE_APP_PARSE_JS_KEY: ${{ vars.VUE_APP_PARSE_JS_KEY }}
           VUE_APP_PARSE_SERVER_URL: ${{ vars.VUE_APP_PARSE_SERVER_URL }}
           VUE_APP_IMGUR_ID: ${{ vars.VUE_APP_IMGUR_ID }}
-          VUE_APP_MAPBOX_TOKEN: ${{ secrets.VUE_APP_MAPBOX_TOKEN }}
+          VUE_APP_MAPBOX_TOKEN: ${{ vars.VUE_APP_MAPBOX_TOKEN }}
         run: npm run build
 
       - name: Deploy to Firebase (Production)
