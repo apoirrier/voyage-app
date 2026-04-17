@@ -2,7 +2,9 @@
 node_modules
 /dist
 
-# local env files
+# env files - never commit credentials
+.env
+.env.production
 .env.local
 .env.*.local
 
