@@ -57,6 +57,7 @@
 <script>
 import { mapState } from 'vuex'
 import { defineComponent } from 'vue';
+import VueSimpleAlert from 'vue3-simple-alert';
 
 export default defineComponent({
     name: "InfoDocker",
@@ -134,6 +135,7 @@ export default defineComponent({
     },
     methods: {
         onChange() {
+            this._iframeUrl = this.extractURL();
             const data = {
                 website: this._website,
                 phone: this._phone,
@@ -142,6 +144,46 @@ export default defineComponent({
                 iframeUrl: this._iframeUrl
             }
             this.$emit("hasChanged", data);
+        },
+        extractURL() {
+            if(this._iframeUrl.length == 0) return "";
+
+            // Check if URL is a XML string containing an iframe, and extract the src attribute if so
+            if(this._iframeUrl.trim().startsWith("<iframe")) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(this._iframeUrl, "text/html");
+                const iframe = doc.querySelector("iframe");
+                if(iframe == null) {
+                    VueSimpleAlert.alert(
+                        "L'iframe est invalide : " + this._iframeUrl,
+                        "Iframe invalide",
+                        "warning"
+                    );
+                    return "";
+                }
+                this._iframeUrl = iframe.src;
+            }
+
+            // Ensure URL is correctly formatted and starts with http:// or https://
+            try {
+                const url = new URL(this._iframeUrl);
+                if(url.protocol != "http:" && url.protocol != "https:") {
+                    VueSimpleAlert.alert(
+                        "L'URL indiquée pour l'iframe doit commencer par http:// ou https://. Obtenu : " + this._iframeUrl,
+                        "URL de l'iframe invalide",
+                        "warning"
+                    );
+                    return "";
+                }
+                return url.toString();
+            } catch (e) {
+                VueSimpleAlert.alert(
+                    "L'URL indiquée pour l'iframe est invalide : " + this._iframeUrl,
+                    "URL de l'iframe invalide",
+                    "warning"
+                );
+                return "";
+            }
         }
     }
 })
