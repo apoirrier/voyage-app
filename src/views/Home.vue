@@ -96,10 +96,15 @@ export default {
                 return;
             this.markersAdded = true;
             this.regions.forEach(region => {
-                const popup = new mapboxgl.Popup({maxWidth: '300px', offset: 25})
-                    .setHTML("<a href='/world/" + region.url + 
-                             "'> <img src=" + this.getImageUrl(region.image) + 
-                             "> <h1> " + this.escapeHTML(region.name) + " </h1> </a>");
+                const popupMaxWidth = (typeof window !== 'undefined' && window.innerWidth && window.innerWidth < 480) ? '90vw' : '300px';
+                const popup = new mapboxgl.Popup({ maxWidth: popupMaxWidth, offset: 25 })
+                    .setHTML(
+                        "<a class='popup-link' href='/world/" + region.url + "'>" +
+                        "<div class='popup-card'>" +
+                        "<img class='popup-image' src='" + this.getImageUrl(region.image) + "' alt='" + this.escapeHTML(region.name) + "'/>" +
+                        "<div class='popup-title'>" + this.escapeHTML(region.name) + "</div>" +
+                        "</div></a>"
+                    );
                 new mapboxgl.Marker().setLngLat(region.coordinates).setPopup(popup).addTo(this.map);
             });
             this.mouseMarker = new mapboxgl.Marker();
@@ -172,24 +177,48 @@ export default {
 }
 
 .mapboxgl-popup-content {
-    display: flex;
+    display: block;
+    padding: 0;
     cursor: pointer;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.mapboxgl-popup-content img {
+.mapboxgl-popup-content .popup-card {
+    display: flex;
+    flex-direction: column;
     width: 300px;
+    max-width: 100%;
+}
+
+.mapboxgl-popup-content .popup-image {
+    width: 100%;
     height: 125px;
     object-fit: cover;
-    float: center;
-    margin-left: -10px;
-    margin-top: -10px;
+    display: block;
     border-radius: 3px 3px 0 0;
 }
 
-.mapboxgl-popup-content h1 {
-    margin-bottom: -10px;
-    margin-top: 1px;
+.mapboxgl-popup-content .popup-title {
+    background: #ffffff;
+    padding: 6px 10px;
+    color: #111;
+    font-weight: 700;
+    font-size: 20px;
+    margin: 0;
+    line-height: 1.2;
+    border-radius: 0 0 3px 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 479px) {
+    .mapboxgl-popup-content .popup-card {
+        width: 65vw;
+    }
+    .mapboxgl-popup-content .popup-title {
+        font-size: 18px;
+    }
 }
 
 .mapboxgl-popup-close-button {
