@@ -5,13 +5,13 @@
             <NavigationBar :name="name" @login-change="changeLogin"/>
             <ImageSlider :images="images" :altText="name" :isEditing="isEditing" :imageName="this.$route.params.region" @images-changed="updateImages" />
 
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-                <div/>
+            <div class="title_container">
+                <div style="flex: 0 0 auto;" />
                 <h1 v-if="!isEditing"> {{ name }} </h1>
                 <input v-else class="h1input" v-model="name">
                 <img v-if="isEditing" src="/images/edit_active.png" class="edit_button edit_button_active" @click="finishEdit">
                 <img v-else-if="!isEditing && loggedIn" src="/images/edit.png" class="edit_button" @click="beginEdit">
-                <div v-else />
+                <div v-else style="flex: 0 0 auto;" />
             </div>
 
             <EditableMarkdown v-if="!isEditing" class="region_description" :inputData="this.description" />
@@ -35,7 +35,7 @@
                             </span>
                         </div>
                     </div>
-                    <div v-if="isEditing" class="region_onetab" :style="tabStyle(-1)" style="width: 3%;" @click="newGeneralTab"> + </div>
+                    <div v-if="isEditing" class="region_onetab" :style="tabStyle(-1)" style="min-width: 50px;" @click="newGeneralTab"> + </div>
                 </div>
                 <div class="region_tab-content" :style="tabStyle(selectedTab)">
                     <div v-if="isPoiTab" class="region_tab-content-flex">
@@ -176,7 +176,7 @@ export default {
     methods: {
         tabStyle(id) {
             if(id != this.selectedTab)
-                return "background-color: darkgrey"
+                return "background-color: darkgrey;"
             if(this.isPoiTab)
                 return "background-color: " + this.colors[id]
             return "color: black; background-color: " + this.colors["general"]
@@ -351,17 +351,42 @@ export default {
 }
 
 .region_tabs {
+    min-width: 0%;
+    height: 100%;
     display: flex;
-    flex-direction: row;
+    flex-wrap: nowrap;
+    height: 30px;
+    -webkit-overflow-scrolling: auto;
+    overflow: auto;
     height: 30px;
 }
 
+@media (min-width: 480px) {
+    .region_tabs {
+        scrollbar-width: none;
+    }
+    .my-div::-webkit-scrollbar {
+        display: none; /* Chrome, Safari */
+    }
+}
+
+@media (max-width: 479px) {
+    .region_tabs {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
 .region_onetab {
+    flex: 0 0 auto;
+    min-width: 100px;
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     color: #fefefe;
     border-radius: 10px 10px 0 0;
     cursor: pointer;
     text-align: center;
-    width: 100px;
     height: 30px;
     line-height: 30px;
     vertical-align: middle;
@@ -369,7 +394,6 @@ export default {
 }
 
 .region_tab-content {
-    border-radius: 0 10px 0 0;
     min-height: 100px;
     color: #fefefe;
 }
@@ -405,6 +429,7 @@ export default {
     height: 30px;
     cursor: pointer;
     opacity: 0.4;
+    padding-left: 5px;
 }
 
 .edit_button:hover {
@@ -449,6 +474,21 @@ export default {
     height: 15px;
 }
 
+.title_container {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: center;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title_container h1 {
+    overflow: hidden;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
 .h1input {
     display: block;
     font-size: 2em;
@@ -457,8 +497,12 @@ export default {
     margin-inline-start: 0px;
     margin-inline-end: 0px;
     font-weight: bold;
-    text-align: center;
     border-width: 0;
+    text-align: center;
+    white-space: nowrap;
+    max-width: calc(100% - 30px);
+    min-height: 36px;
+    box-sizing: border-box;
 }
 
 .pinput {
@@ -467,7 +511,6 @@ export default {
     margin-block-end: 1em;
     margin-inline-start: 0px;
     margin-inline-end: 0px;
-    font-family: Avenir, Helvetica, Arial, sans-serif;
     text-align: justify;
     width: -webkit-fill-available;
     min-height: 200px;
