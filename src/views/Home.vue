@@ -20,6 +20,17 @@ import imgur from "../mixins/imgur.ts"
 import parse from "../mixins/parse.ts"
 import VueSimpleAlert from 'vue3-simple-alert'
 
+const REGIONS_SOURCE_ID = 'regions';
+const LAYER_CLUSTERS = 'regions-clusters';
+const LAYER_CLUSTER_COUNT = 'regions-cluster-count';
+const LAYER_UNCLUSTERED = 'regions-unclustered';
+const CLUSTER_COLOR = 'rgb(84, 165, 241)';
+const CLUSTER_MAX_ZOOM = 14;
+const CLUSTER_RADIUS = 50;
+const UNCLUSTERED_SYNC_DELAY_MS = 120;
+const POPUP_MAX_WIDTH_MOBILE = '90vw';
+const POPUP_MAX_WIDTH_DESKTOP = '300px';
+
 export default {
     name: "Home",
     components: {
@@ -33,7 +44,8 @@ export default {
             loggedIn: Parse.User.current() != undefined,
             mouseMarker: null,
             isAddingMarker: false,
-            markersAdded: false
+            regionClustersInitialized: false,
+            mouseMarkerInitialized: false,
         }
     },
     mounted() {
@@ -50,23 +62,40 @@ export default {
         const nav = new mapboxgl.NavigationControl();
         this.map.addControl(nav, "bottom-right");
 
-        this.map.on("load", this.addMarkers);
+        this.map.on("load", this.onMapLoad);
         this.map.on("click", this.clickOnMap);
 
-        // Capture escape key to cancel add
-        const self = this;
-        window.addEventListener('keyup', function(ev) {
-            if(ev.key == 'Escape')
-                self.pressEscape();
-        });
+        window.addEventListener('keyup', this.handleEscapeKey);
         if(localStorage.lastTab)
             localStorage.removeItem("lastTab");
     },
     created() {
+        this.regionMarkersByKey = new Map();
+        this.unclusteredSyncTimer = null;
+        this.activeRegionMarker = null;
+        this.handleEscapeKey = (ev) => {
+            if (ev.key == 'Escape')
+                this.pressEscape();
+        };
         this.loadData();
     },
     watch: {
         '$route': 'loadData'
+    },
+    beforeUnmount() {
+        if (this.unclusteredSyncTimer != null) {
+            clearTimeout(this.unclusteredSyncTimer);
+            this.unclusteredSyncTimer = null;
+        }
+        window.removeEventListener('keyup', this.handleEscapeKey);
+        if (this.map) {
+            this.map.off('moveend', this.scheduleUnclusteredSync);
+            this.map.off('zoomend', this.scheduleUnclusteredSync);
+        }
+        if (this.regionMarkersByKey) {
+            this.regionMarkersByKey.forEach((m) => m.remove());
+            this.regionMarkersByKey.clear();
+        }
     },
     methods: {
         changeLogin(newValue) {
@@ -75,8 +104,235 @@ export default {
         loadData() {
             this.callParse("listRegion", undefined, (answer) => {
                 this.regions = answer.regions;
-                this.addMarkers();
+                this.syncRegionsToMap();
             }, this);
+        },
+        onMapLoad() {
+            this.setupMouseMarker();
+            this.syncRegionsToMap();
+        },
+        buildRegionsGeoJSON() {
+            return {
+                type: 'FeatureCollection',
+                features: this.regions.map((region) => ({
+                    type: 'Feature',
+                    properties: {
+                        name: region.name,
+                        url: region.url,
+                        image: region.image,
+                    },
+                    geometry: {
+                        type: 'Point',
+                        coordinates: region.coordinates,
+                    },
+                })),
+            };
+        },
+        setupMouseMarker() {
+            if (this.mouseMarkerInitialized)
+                return;
+            this.mouseMarkerInitialized = true;
+            this.mouseMarker = new mapboxgl.Marker();
+            this.mouseMarker.setLngLat([0, 0]);
+            this.map.on("mousemove", (e) => {
+                if (this.isAddingMarker)
+                    this.mouseMarker.setLngLat(e.lngLat);
+            });
+        },
+        initRegionClusterLayers() {
+            if (this.regionClustersInitialized)
+                return;
+            this.regionClustersInitialized = true;
+
+            this.map.addSource(REGIONS_SOURCE_ID, {
+                type: 'geojson',
+                data: { type: 'FeatureCollection', features: [] },
+                cluster: true,
+                clusterMaxZoom: CLUSTER_MAX_ZOOM,
+                clusterRadius: CLUSTER_RADIUS,
+            });
+
+            this.map.addLayer({
+                id: LAYER_CLUSTERS,
+                type: 'circle',
+                source: REGIONS_SOURCE_ID,
+                filter: ['has', 'point_count'],
+                paint: {
+                    'circle-color': CLUSTER_COLOR,
+                    'circle-radius': 22,
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': '#ffffff',
+                },
+            });
+
+            this.map.addLayer({
+                id: LAYER_CLUSTER_COUNT,
+                type: 'symbol',
+                source: REGIONS_SOURCE_ID,
+                filter: ['has', 'point_count'],
+                layout: {
+                    'text-field': ['get', 'point_count'],
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 14,
+                },
+                paint: {
+                    'text-color': '#ffffff',
+                },
+            });
+
+            // Invisible hit target so clustering still decides which points are “unclustered”;
+            // actual pins are synced as mapboxgl.Marker (default DOM pin) in syncUnclusteredMarkers.
+            this.map.addLayer({
+                id: LAYER_UNCLUSTERED,
+                type: 'circle',
+                source: REGIONS_SOURCE_ID,
+                filter: ['!', ['has', 'point_count']],
+                paint: {
+                    'circle-opacity': 0,
+                    'circle-radius': 18,
+                    'circle-stroke-width': 0,
+                },
+            });
+
+            const setPointer = () => { this.map.getCanvas().style.cursor = 'pointer'; };
+            const clearPointer = () => { this.map.getCanvas().style.cursor = ''; };
+
+            [LAYER_CLUSTERS, LAYER_CLUSTER_COUNT].forEach((id) => {
+                this.map.on('mouseenter', id, setPointer);
+                this.map.on('mouseleave', id, clearPointer);
+            });
+
+            this.map.on('moveend', this.scheduleUnclusteredSync);
+            this.map.on('zoomend', this.scheduleUnclusteredSync);
+
+            this.map.on('click', LAYER_CLUSTERS, (e) => {
+                const features = this.map.queryRenderedFeatures(e.point, { layers: [LAYER_CLUSTERS] });
+                if (!features.length)
+                    return;
+                const clusterId = features[0].properties.cluster_id;
+                const source = this.map.getSource(REGIONS_SOURCE_ID);
+                source.getClusterExpansionZoom(clusterId, (err, zoom) => {
+                    if (err)
+                        return;
+                    this.map.easeTo({
+                        center: features[0].geometry.coordinates,
+                        zoom: zoom,
+                    });
+                });
+            });
+
+        },
+        scheduleUnclusteredSync() {
+            if (this.unclusteredSyncTimer != null)
+                clearTimeout(this.unclusteredSyncTimer);
+            this.unclusteredSyncTimer = setTimeout(() => {
+                this.unclusteredSyncTimer = null;
+                this.syncUnclusteredMarkers();
+            }, UNCLUSTERED_SYNC_DELAY_MS);
+        },
+        getPopupMaxWidth() {
+            return (typeof window !== 'undefined' && window.innerWidth && window.innerWidth < 480)
+                ? POPUP_MAX_WIDTH_MOBILE
+                : POPUP_MAX_WIDTH_DESKTOP;
+        },
+        getRegionMarkerKey(url, coordinates) {
+            return url + '@' + coordinates[0] + ',' + coordinates[1];
+        },
+        closeActiveRegionPopup() {
+            if (!this.activeRegionMarker)
+                return;
+            const popup = this.activeRegionMarker.getPopup();
+            if (popup)
+                popup.remove();
+            this.activeRegionMarker = null;
+        },
+        removeRegionMarker(key) {
+            const marker = this.regionMarkersByKey.get(key);
+            if (!marker)
+                return;
+            if (this.activeRegionMarker === marker)
+                this.activeRegionMarker = null;
+            marker.remove();
+            this.regionMarkersByKey.delete(key);
+        },
+        buildRegionPopup(props) {
+            return new mapboxgl.Popup({ maxWidth: this.getPopupMaxWidth(), offset: 25 })
+                .setHTML(
+                    "<a class='popup-link' href='/world/" + props.url + "'>" +
+                    "<div class='popup-card'>" +
+                    "<img class='popup-image' src='" + this.getImageUrl(props.image) + "' alt='" + this.escapeHTML(props.name) + "'/>" +
+                    "<div class='popup-title'>" + this.escapeHTML(props.name) + "</div>" +
+                    "</div></a>"
+                );
+        },
+        attachLazyRegionPopup(marker, props) {
+            const el = marker.getElement();
+            if (el.dataset.lazyPopupBound === '1')
+                return;
+            el.dataset.lazyPopupBound = '1';
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!marker.getPopup()) {
+                    const popup = this.buildRegionPopup(props);
+                    popup.on('close', () => {
+                        if (this.activeRegionMarker === marker)
+                            this.activeRegionMarker = null;
+                    });
+                    marker.setPopup(popup);
+                }
+
+                if (this.activeRegionMarker !== marker)
+                    this.closeActiveRegionPopup();
+
+                marker.togglePopup();
+                const popup = marker.getPopup();
+                this.activeRegionMarker = (popup && popup.isOpen && popup.isOpen()) ? marker : null;
+            });
+        },
+        syncUnclusteredMarkers() {
+            if (!this.map || !this.regionClustersInitialized)
+                return;
+            const canvas = this.map.getCanvas();
+            const features = this.map.queryRenderedFeatures(
+                [[0, 0], [canvas.width, canvas.height]],
+                { layers: [LAYER_UNCLUSTERED] }
+            );
+            const seen = new Set();
+            const nextKeys = new Set();
+            const pending = [];
+            features.forEach((f) => {
+                const coords = f.geometry.coordinates;
+                const key = this.getRegionMarkerKey(f.properties.url, coords);
+                if (seen.has(key))
+                    return;
+                seen.add(key);
+                nextKeys.add(key);
+                pending.push({ key, coords, props: f.properties });
+            });
+            pending.forEach(({ key, coords, props }) => {
+                let marker = this.regionMarkersByKey.get(key);
+                if (!marker) {
+                    marker = new mapboxgl.Marker()
+                        .setLngLat(coords)
+                        .addTo(this.map);
+                    this.attachLazyRegionPopup(marker, props);
+                    this.regionMarkersByKey.set(key, marker);
+                } else {
+                    marker.setLngLat(coords);
+                }
+            });
+            for (const key of Array.from(this.regionMarkersByKey.keys())) {
+                if (!nextKeys.has(key))
+                    this.removeRegionMarker(key);
+            }
+        },
+        syncRegionsToMap() {
+            if (!this.map || !this.map.isStyleLoaded())
+                return;
+            if (!this.regionClustersInitialized)
+                this.initRegionClusterLayers();
+            this.map.getSource(REGIONS_SOURCE_ID).setData(this.buildRegionsGeoJSON());
+            this.map.once('idle', this.scheduleUnclusteredSync);
         },
         async createRegion(coordinates) {
             VueSimpleAlert.prompt("Nouvelle région").then( (name) => {
@@ -88,31 +344,6 @@ export default {
                 }, this);
             });
             this.pressEscape();
-        },
-        addMarkers() {
-            if(this.regions.length == 0)
-                return;
-            if(this.markersAdded)
-                return;
-            this.markersAdded = true;
-            this.regions.forEach(region => {
-                const popupMaxWidth = (typeof window !== 'undefined' && window.innerWidth && window.innerWidth < 480) ? '90vw' : '300px';
-                const popup = new mapboxgl.Popup({ maxWidth: popupMaxWidth, offset: 25 })
-                    .setHTML(
-                        "<a class='popup-link' href='/world/" + region.url + "'>" +
-                        "<div class='popup-card'>" +
-                        "<img class='popup-image' src='" + this.getImageUrl(region.image) + "' alt='" + this.escapeHTML(region.name) + "'/>" +
-                        "<div class='popup-title'>" + this.escapeHTML(region.name) + "</div>" +
-                        "</div></a>"
-                    );
-                new mapboxgl.Marker().setLngLat(region.coordinates).setPopup(popup).addTo(this.map);
-            });
-            this.mouseMarker = new mapboxgl.Marker();
-            this.mouseMarker.setLngLat([0,0]);
-            this.map.on("mousemove", (e) => {
-                if(this.isAddingMarker)
-                    this.mouseMarker.setLngLat(e.lngLat);
-            });
         },
         escapeHTML(input) {
             const map = {
@@ -130,7 +361,9 @@ export default {
             if(this.isAddingMarker) {
                 this.isAddingMarker = false;
                 this.createRegion([e.lngLat.lng, e.lngLat.lat]);
+                return;
             }
+            this.closeActiveRegionPopup();
         },
         newRegionClicked() {
             this.isAddingMarker = true;
@@ -165,7 +398,7 @@ export default {
 
 .new_region svg {
     width: 40px;
-    fill: rgb(84, 165, 241);;
+    fill: rgb(84, 165, 241);
 }
 
 .basemap {
